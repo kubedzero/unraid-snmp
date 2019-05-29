@@ -4,8 +4,8 @@
 <!ENTITY name        "snmp">
 <!ENTITY author      "kubedzero">
 
-<!ENTITY ver         "2019.05.28b">
-<!ENTITY pkgVer      "5.8">
+<!ENTITY pluginVer   "2019.05.28b">
+<!ENTITY snmpVer     "5.8">
 <!ENTITY minOSVer    "6.7.0">
 
 <!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/master/snmp.plg">
@@ -17,7 +17,7 @@
 <!ENTITY cfgdir      "/boot/config/plugins/&name;">
 <!ENTITY pkghost     "&rawGitURL;/packages">
 
-<!ENTITY snmppkg     "net-snmp-&pkgVer;-x86_64-5.txz">
+<!ENTITY snmppkg     "net-snmp-&snmpVer;-x86_64-5.txz">
 <!ENTITY snmppkgmd5  "3ed1f1794ca434c3e3dcb56fa0eac51e">
 
 <!ENTITY libnlpkg    "libnl-1.1.4-x86_64-1.txz">
@@ -33,7 +33,7 @@
 
 <PLUGIN  name="&name;"
          author="&author;"
-         version="&ver;"
+         version="&pluginVer;"
          pluginURL="&pluginURL;"
          support="&supportURL;"
          min="&minOSVer;"
@@ -261,7 +261,7 @@ The 'post-install' script.
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; has been installed."
-echo " Version: &version;"
+echo " Version: &pluginVer;"
 echo "-----------------------------------------------------------"
 echo ""
 </INLINE>
