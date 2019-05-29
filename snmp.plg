@@ -2,25 +2,29 @@
 
 <!DOCTYPE PLUGIN [
 <!ENTITY name        "snmp">
-<!ENTITY author      "coppit">
-<!ENTITY version     "2019.05.28">
-<!ENTITY pluginURL   "https://github.com/coppit/unraid-snmp/raw/master/snmp.plg">
-<!ENTITY pkgversion  "5.8">
+<!ENTITY author      "kubedzero">
+
+<!ENTITY ver         "2019.05.28b">
+<!ENTITY pkgVer      "5.8">
 <!ENTITY minOSVer    "6.7.0">
-<!ENTITY gitURL      "https://raw.githubusercontent.com/&author;/unraid-snmp/master">
+
+<!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/master/snmp.plg">
+<!ENTITY rawGitURL   "https://raw.githubusercontent.com/&author;/unraid-snmp/master">
+<!ENTITY supportURL  "https://forums.unraid.net/topic/39339-plug-in-snmp">
+
 <!ENTITY plugdir     "/usr/local/emhttp/plugins/&name;">
 <!ENTITY pkgdir      "/boot/packages">
 <!ENTITY cfgdir      "/boot/config/plugins/&name;">
-<!ENTITY pkghost     "&gitURL;/packages">
+<!ENTITY pkghost     "&rawGitURL;/packages">
 
-<!ENTITY snmppkg     "net-snmp-&pkgversion;-x86_64-5.txz">
+<!ENTITY snmppkg     "net-snmp-&pkgVer;-x86_64-5.txz">
 <!ENTITY snmppkgmd5  "3ed1f1794ca434c3e3dcb56fa0eac51e">
 
 <!ENTITY libnlpkg    "libnl-1.1.4-x86_64-1.txz">
 <!ENTITY libnlpkgmd5 "435837a5bf0401a937d6ec93e458333b">
 
-<!ENTITY iconfile    "snmp.png">
-<!ENTITY iconfilemd5 "863e97dc0e59ae9352f558ee8e0d40a2">
+<!ENTITY iconfile    "snmpLogo.png">
+<!ENTITY iconfilemd5 "4e527e3b03b278774f8044ca148d7e28">
 
 <!ENTITY community   "public">
 <!ENTITY location    "Here">
@@ -29,12 +33,17 @@
 
 <PLUGIN  name="&name;"
          author="&author;"
-         version="&version;"
+         version="&ver;"
          pluginURL="&pluginURL;"
-         min="&minOSVer;">
+         support="&supportURL;"
+         min="&minOSVer;"
+         >
 
 <CHANGES>
 ##&name;
+
+###2019.05.28b
+- Customized for the kubedzero repository
 
 ###2019.05.28
 - Updated plugin to work with 6.7.0, enforce minimum version
@@ -126,7 +135,7 @@ Get the package.
 Fetch an icon
 -->
 <FILE Name="&plugdir;/&iconfile;">
-<URL>&gitURL;/&iconfile;</URL>
+<URL>&rawGitURL;/&iconfile;</URL>
 <MD5>&iconfilemd5;</MD5>
 </FILE>
 
@@ -134,14 +143,14 @@ Fetch an icon
 Fetch the drive temperature script
 -->
 <FILE Name="&plugdir;/drive_temps.sh">
-<URL>&gitURL;/drive_temps.sh</URL>
+<URL>&rawGitURL;/drive_temps.sh</URL>
 </FILE>
 
 <!--
 Fetch the share free space script
 -->
 <FILE Name="&plugdir;/share_free_space.sh">
-<URL>&gitURL;/share_free_space.sh</URL>
+<URL>&rawGitURL;/share_free_space.sh</URL>
 </FILE>
 
 <!--
@@ -252,7 +261,6 @@ The 'post-install' script.
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; has been installed."
-echo " Copyright 2015, David Coppit &lt;david@coppit.org&gt;"
 echo " Version: &version;"
 echo "-----------------------------------------------------------"
 echo ""
