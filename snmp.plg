@@ -4,7 +4,7 @@
 <!ENTITY name        "snmp">
 <!ENTITY author      "kubedzero">
 
-<!ENTITY pluginVer   "2019.05.28c">
+<!ENTITY pluginVer   "2020.04.01">
 <!ENTITY snmpVer     "5.8">
 <!ENTITY minOSVer    "6.7.0">
 
@@ -12,9 +12,10 @@
 <!ENTITY rawGitURL   "https://raw.githubusercontent.com/&author;/unraid-snmp/master">
 <!ENTITY supportURL  "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
-<!ENTITY plugdir     "/usr/local/emhttp/plugins/&name;">
-<!ENTITY pkgdir      "/boot/packages">
-<!ENTITY cfgdir      "/boot/config/plugins/&name;">
+<!-- Defines the working directory where README, conf, other files will be created -->
+<!ENTITY workingdir  "/usr/local/emhttp/plugins/&name;">
+<!-- Defines the persistent (USB) directory where downloaded files are cached -->
+<!ENTITY usbcfgdir   "/boot/config/plugins/&name;">
 <!ENTITY pkghost     "&rawGitURL;/packages">
 
 <!ENTITY snmppkg     "net-snmp-&snmpVer;-x86_64-5.txz">
@@ -25,6 +26,12 @@
 
 <!ENTITY iconfile    "snmp.png">
 <!ENTITY iconfilemd5 "4e527e3b03b278774f8044ca148d7e28">
+
+<!ENTITY tempsfile   "drive_temps.sh">
+<!ENTITY tempsmd5    "71a809c1e34dfcc99d2f375c1ca89aa5">
+
+<!ENTITY sharefile   "share_free_space.sh">
+<!ENTITY sharemd5    "fc3632854f81070ade8c363e6aba2862">
 
 <!ENTITY community   "public">
 <!ENTITY location    "Here">
@@ -40,7 +47,15 @@
          >
 
 <CHANGES>
-##&name;
+**SNMP**
+
+###2020.04.01
+- Cache downloaded files on USB to support offline installation
+- Add /mnt/disk up to 28 from 20 to provide 30 drive support
+- Add MD5 for shell scripts
+- Format plugin name in README to be in line with other plugins
+- More consistent variable use and naming in .plg file
+- Clearer install and uninstall logging
 
 ###2019.05.28c
 - Fix icon file
@@ -82,32 +97,27 @@
 - Initial unRAID V6 release.
 </CHANGES>
 
-<!--
 
-This plugin provides SNMP support for unRAID systems.
-
--->
-
-<!--
-create plugin README.md file
--->
-<FILE Name="&plugdir;/README.md">
+<!-- Create plugin README.md file used in the Plugin Web UI-->
+<FILE Name="&workingdir;/README.md">
 <INLINE>
-###SNMP###
+**SNMP**
 
 Installs and configures SNMP, the Simple Network Management Protocol. SNMP can be used to expose server information to
 monitoring tools like Observium.
 </INLINE>
 </FILE>
 
-<!--
-Check for prerequisites
--->
+<!-- Check that Perl is installed -->
 <FILE Run="/bin/bash">
 <INLINE>
+# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+# exit script early if we encounter an error
+set -e
+
 perl_path=$(which perl 2>/dev/null)
 if [ ! -x "$perl_path" ] ; then
-  echo "This plugin requires perl. The easiest way to get it is to install NerdPack:"
+  echo "This plugin requires perl. Installation is recommended via NerdPack:"
   echo "http://lime-technology.com/forum/index.php?topic=37541.0"
   echo ""
   echo "Exiting"
@@ -118,48 +128,65 @@ fi
 </INLINE>
 </FILE>
 
-<!--
-Install prerequisites.
--->
-<FILE Name="&pkgdir;/&libnlpkg;" Run="upgradepkg --install-new">
+<!-- Download, cache and install dependent libnl package -->
+<FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
 <URL>&pkghost;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
-<!--
-Get the package.
--->
-<FILE Name="&pkgdir;/&snmppkg;" Run="upgradepkg --install-new">
+<!-- Download, cache and install the SNMP package -->
+<FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
 <URL>&pkghost;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
-<!--
-Fetch an icon
--->
-<FILE Name="&plugdir;/&iconfile;">
+<!-- Download and cache the plugin icon -->
+<FILE Name="&usbcfgdir;/&iconfile;">
 <URL>&rawGitURL;/&iconfile;</URL>
 <MD5>&iconfilemd5;</MD5>
 </FILE>
 
-<!--
-Fetch the drive temperature script
--->
-<FILE Name="&plugdir;/drive_temps.sh">
-<URL>&rawGitURL;/drive_temps.sh</URL>
+<!-- Download and cache the drive temperature script -->
+<FILE Name="&usbcfgdir;/&tempsfile;">
+<URL>&rawGitURL;/&tempsfile;</URL>
+<MD5>&tempsmd5;</MD5>
 </FILE>
 
-<!--
-Fetch the share free space script
--->
-<FILE Name="&plugdir;/share_free_space.sh">
-<URL>&rawGitURL;/share_free_space.sh</URL>
+<!-- Download and cache the free space script -->
+<FILE Name="&usbcfgdir;/&sharefile;">
+<URL>&rawGitURL;/&sharefile;</URL>
+<MD5>&sharemd5;</MD5>
 </FILE>
 
-<!--
-Set up the config file
--->
-<FILE Name="&plugdir;/snmpd.conf">
+<!-- Copy into working directory and set executable permissions -->
+<FILE Run="/bin/bash">
+<INLINE>
+# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+# exit script early if we encounter an error
+set -e
+
+echo ""
+echo "+=============================================================================="
+echo "| Copy files from &usbcfgdir;"
+echo "| into &workingdir; and set permissions"
+echo "+=============================================================================="
+
+chmod o+rx &workingdir;
+
+cp &usbcfgdir;/&iconfile; &workingdir;/&iconfile;
+cp &usbcfgdir;/&tempsfile; &workingdir;/&tempsfile;
+cp &usbcfgdir;/&sharefile; &workingdir;/&sharefile;
+
+chmod a+x &workingdir;/&tempsfile;
+chmod a+x &workingdir;/&sharefile;
+
+echo "Copy complete!"
+exit 0
+</INLINE>
+</FILE>
+
+<!-- Create the config file in the working directory -->
+<FILE Name="&workingdir;/snmpd.conf">
 <INLINE>
 rocommunity &community;
 syslocation &location;
@@ -184,46 +211,43 @@ disk /mnt/disk17
 disk /mnt/disk18
 disk /mnt/disk19
 disk /mnt/disk20
+disk /mnt/disk21
+disk /mnt/disk22
+disk /mnt/disk23
+disk /mnt/disk24
+disk /mnt/disk25
+disk /mnt/disk26
+disk /mnt/disk27
+disk /mnt/disk28
 disk /mnt/cache
 
-extend disktemp &plugdir;/drive_temps.sh
-extend sharefree &plugdir;/share_free_space.sh
+extend disktemp &workingdir;/&tempsfile;
+extend sharefree &workingdir;/&sharefile;
 </INLINE>
 </FILE>
 
-<!--
-Fix permissions on &plugdir;
--->
+<!-- Update rc.d to use our config file, restart snmpd, and test it -->
 <FILE Run="/bin/bash">
 <INLINE>
-chmod o+rx &plugdir;
-</INLINE>
-</FILE>
+# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+# exit script early if we encounter an error
+set -e
 
-<!--
-Update rc.d to use our config file, restart snmpd, and test it
--->
-<FILE Run="/bin/bash">
-<INLINE>
+echo ""
 echo "+=============================================================================="
 echo "| Updating /etc/rc.d/rc.snmpd to use our config file, and to reduce logging"
 echo "+=============================================================================="
 
 bash /etc/rc.d/rc.snmpd stop
 
-sed -i.old -e 's#/etc/snmp/snmpd.conf#&plugdir;/snmpd.conf#g' /etc/rc.d/rc.snmpd
+sed -i.old -e 's#/etc/snmp/snmpd.conf#&workingdir;/snmpd.conf#g' /etc/rc.d/rc.snmpd
 sed -i.old -e 's#OPTIONS="#OPTIONS="-LF w /var/log/snmpd.log #g' /etc/rc.d/rc.snmpd
-
-chmod a+x &plugdir;/drive_temps.sh
-chmod a+x &plugdir;/share_free_space.sh
 
 bash /etc/rc.d/rc.snmpd start
 
 echo ""
-echo ""
-
 echo "+=============================================================================="
-echo "| Testing SNMP by listing mounts"
+echo "| Testing SNMP by listing mounts, /boot should be present"
 echo "+=============================================================================="
 
 RESULTS=$(snmpwalk -v 1 localhost -c public hrFSMountPoint 2>&amp;1)
@@ -240,12 +264,12 @@ else
 fi
 
 echo ""
-echo "Here's what drive temperatures look like:"
+echo "Here are how drive temperatures look:"
 echo snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
 snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
 
 echo ""
-echo "Here's what share free space looks like:"
+echo "Here is how share free space looks:"
 echo snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
@@ -256,9 +280,7 @@ exit 0
 </INLINE>
 </FILE>
 
-<!--
-The 'post-install' script.
--->
+<!-- The 'post-install' script -->
 <FILE Run="/bin/bash">
 <INLINE>
 echo ""
@@ -270,37 +292,43 @@ echo ""
 </INLINE>
 </FILE>
 
-<!--
-The 'remove' script.
--->
+<!-- The 'remove' script -->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
+# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+# exit script early if we encounter an error
+set -e
+
+echo ""
 echo "+=============================================================================="
 echo "| Uninstalling packages"
 echo "+=============================================================================="
 
-# Delete the package, and any old package files too
-rm -f $(ls &pkgdir;/&name;*.txz 2>/dev/null)
-
 # Uninstall the package
 removepkg $(basename &snmppkg; .txz) | grep -v -e '  --&gt; Deleting'
 
-# Don't uninstall the prerequisites, in case some other plug is using them. On reboot, they'll get "removed" if no plugin
-# needs them, or will be re-downloaded and reinstalled by some plugin that does need them.
-#removepkg $(basename &libnlpkg; .txz) | grep -v -e '  --&gt; Deleting'
+# Uninstall prerequisites in the reverse order of their installation
+# NOTE: Skipping package removal of prereqs in case other plugins depend on them
+
 
 echo ""
-echo ""
+echo "+=============================================================================="
+echo "| Deleting &workingdir;"
+echo "| Deleting &usbcfgdir;"
+echo "+=============================================================================="
 
-echo "+=============================================================================="
-echo "| Deleting &plugdir;"
-echo "+=============================================================================="
+# Delete the USB plugin folder storing cached files
+rm -rf &usbcfgdir;
 
 # Remove plugin.
-rm -rf &plugdir;
+rm -rf &workingdir;
 
 echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been uninstalled."
+echo "-----------------------------------------------------------"
 echo ""
+
 </INLINE>
 </FILE>
 
