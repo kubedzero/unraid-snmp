@@ -4,25 +4,27 @@
 <!ENTITY name        "snmp">
 <!ENTITY author      "kubedzero">
 
-<!ENTITY pluginVer   "2020.04.01">
-<!ENTITY snmpVer     "5.8">
+<!ENTITY pluginVer   "2020.09.13">
 <!ENTITY minOSVer    "6.7.0">
 
-<!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/master/snmp.plg">
-<!ENTITY rawGitURL   "https://raw.githubusercontent.com/&author;/unraid-snmp/master">
+<!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/test/snmp.plg">
+<!ENTITY rawGitURL   "https://raw.githubusercontent.com/&author;/unraid-snmp/test">
 <!ENTITY supportURL  "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
 <!-- Defines the working directory where README, conf, other files will be created -->
 <!ENTITY workingdir  "/usr/local/emhttp/plugins/&name;">
 <!-- Defines the persistent (USB) directory where downloaded files are cached -->
 <!ENTITY usbcfgdir   "/boot/config/plugins/&name;">
-<!ENTITY pkghost     "&rawGitURL;/packages">
+<!ENTITY pkgurl     "&rawGitURL;/packages">
 
-<!ENTITY snmppkg     "net-snmp-&snmpVer;-x86_64-5.txz">
-<!ENTITY snmppkgmd5  "3ed1f1794ca434c3e3dcb56fa0eac51e">
+<!ENTITY snmppkg     "net-snmp-5.9-x86_64-1.txz">
+<!ENTITY snmppkgmd5  "b4f6f3dfef81d1f58171012800b8ffc6">
 
-<!ENTITY libnlpkg    "libnl-1.1.4-x86_64-1.txz">
-<!ENTITY libnlpkgmd5 "435837a5bf0401a937d6ec93e458333b">
+<!ENTITY libnlpkg    "libnl-1.1.4-x86_64-3.txz">
+<!ENTITY libnlpkgmd5 "82c9374aaa9c7f4efbde8041f87d6053">
+
+<!ENTITY perlpkg    "perl-5.32.0-x86_64-1.txz">
+<!ENTITY perlpkgmd5 "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY iconfile    "snmp.png">
 <!ENTITY iconfilemd5 "4e527e3b03b278774f8044ca148d7e28">
@@ -48,6 +50,11 @@
 
 <CHANGES>
 **SNMP**
+
+###2020.09.13 test
+- Updated net-snmp from 5.8-5 to 5.9
+- Updated libnl from 1.1.4 to 1.1.4-3
+- Perl 5.32.0 declared as dependency instead of separate install
 
 ###2020.04.01
 - Cache downloaded files on USB to support offline installation
@@ -108,35 +115,21 @@ monitoring tools like Observium.
 </INLINE>
 </FILE>
 
-<!-- Check that Perl is installed -->
-<FILE Run="/bin/bash">
-<INLINE>
-# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# exit script early if we encounter an error
-set -e
-
-perl_path=$(which perl 2>/dev/null)
-if [ ! -x "$perl_path" ] ; then
-  echo "This plugin requires perl. Installation is recommended via NerdPack:"
-  echo "http://lime-technology.com/forum/index.php?topic=37541.0"
-  echo ""
-  echo "Exiting"
-  echo ""
-  echo ""
-  exit 1
-fi
-</INLINE>
+<!-- Download, cache and install dependent perl package shared with Nerd Pack -->
+<FILE Name="&usbcfgdir;/&perlpkg;" Run="upgradepkg --install-new">
+<URL>&pkgurl;/&perlpkg;</URL>
+<MD5>&perlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install dependent libnl package -->
 <FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
-<URL>&pkghost;/&libnlpkg;</URL>
+<URL>&pkgurl;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install the SNMP package -->
 <FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
-<URL>&pkghost;/&snmppkg;</URL>
+<URL>&pkgurl;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
@@ -240,7 +233,10 @@ echo "+=========================================================================
 
 bash /etc/rc.d/rc.snmpd stop
 
+# replace the default snmpd.conf with the custom config in our working directory
 sed -i.old -e 's#/etc/snmp/snmpd.conf#&workingdir;/snmpd.conf#g' /etc/rc.d/rc.snmpd
+
+# prepend `-LF w /var/log/snmpd.log ` (including the space) into existing OPTIONS
 sed -i.old -e 's#OPTIONS="#OPTIONS="-LF w /var/log/snmpd.log #g' /etc/rc.d/rc.snmpd
 
 bash /etc/rc.d/rc.snmpd start
@@ -308,8 +304,10 @@ echo "+=========================================================================
 removepkg $(basename &snmppkg; .txz) | grep -v -e '  --&gt; Deleting'
 
 # Uninstall prerequisites in the reverse order of their installation
-# NOTE: Skipping package removal of prereqs in case other plugins depend on them
+removepkg $(basename &libnlpkg; .txz) | grep -v -e '  --&gt; Deleting'
 
+# NOTE: Skipping package removal of prereqs in Nerd Pack in case other plugins depend on them
+#removepkg $(basename &perlpkg; .txz) | grep -v -e '  --&gt; Deleting'
 
 echo ""
 echo "+=============================================================================="
