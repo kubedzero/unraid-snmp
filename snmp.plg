@@ -4,7 +4,7 @@
 <!ENTITY name        "snmp">
 <!ENTITY author      "kubedzero">
 
-<!ENTITY pluginVer   "2020.09.13b">
+<!ENTITY pluginVer   "2020.09.13c">
 <!ENTITY minOSVer    "6.7.0">
 
 <!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/test/snmp.plg">
@@ -49,12 +49,14 @@
          >
 
 <CHANGES>
-**SNMP**
+##SNMP
 
 ###2020.09.13 test
 - Updated net-snmp from 5.8-5 to 5.9
 - Updated libnl from 1.1.4 to 1.1.4-3
 - Perl 5.32.0 declared as dependency instead of separate install
+- Refactored `share_free_space.sh` and `drive_temps.sh`
+- Install logging more clearly states usage of single and double quotes in sample calls  
 
 ###2020.04.01
 - Cache downloaded files on USB to support offline installation
@@ -228,7 +230,7 @@ set -e
 
 echo ""
 echo "+=============================================================================="
-echo "| Updating /etc/rc.d/rc.snmpd to use our config file, and to reduce logging"
+echo "| Updating /etc/rc.d/rc.snmpd to use our config file and to reduce logging"
 echo "+=============================================================================="
 
 bash /etc/rc.d/rc.snmpd stop
@@ -259,15 +261,13 @@ else
   exit 1
 fi
 
-echo ""
-echo "Here are how drive temperatures look:"
-echo snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
-snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
+printf "\nHere are how drive temperatures look:\n"
+printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"disktemp\"'\n"
+snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
 
-echo ""
-echo "Here is how share free space looks:"
-echo snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
-snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
+printf "\nHere is how share free space looks:\n"
+printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
+snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
 echo ""
 echo ""
