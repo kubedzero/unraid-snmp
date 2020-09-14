@@ -4,7 +4,7 @@
 <!ENTITY name        "snmp">
 <!ENTITY author      "kubedzero">
 
-<!ENTITY pluginVer   "2020.09.13">
+<!ENTITY pluginVer   "2020.09.13b">
 <!ENTITY minOSVer    "6.7.0">
 
 <!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/test/snmp.plg">
@@ -23,8 +23,8 @@
 <!ENTITY libnlpkg    "libnl-1.1.4-x86_64-3.txz">
 <!ENTITY libnlpkgmd5 "82c9374aaa9c7f4efbde8041f87d6053">
 
-<!ENTITY perlpkg    "perl-5.30.2-x86_64-1.txz">
-<!ENTITY perlpkgmd5 "a92c473c7afe5c7fe46eaa6c070f24d2">
+<!ENTITY perlpkg    "perl-5.32.0-x86_64-1.txz">
+<!ENTITY perlpkgmd5 "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY iconfile    "snmp.png">
 <!ENTITY iconfilemd5 "4e527e3b03b278774f8044ca148d7e28">
