@@ -54,8 +54,11 @@
 ###2020.09.13 test
 - Updated net-snmp from 5.8-5 to 5.9
 - Updated libnl from 1.1.4 to 1.1.4-3
-- Perl 5.32.0 declared as dependency instead of separate install
-- Refactored `share_free_space.sh` and `drive_temps.sh`
+- Perl 5.32.0 declared as dependency instead of separate install. Plugin maintainer should keep the version in sync with Nerd Pack
+- Refactored `share_free_space.sh` and changed output to KB instead of bytes
+- Refactored `drive_temps.sh` for clearer cached temperature behavior. Caching present for rapid SNMP calls and large arrays
+- Added `disk_free_space.sh` for /boot and /mnt/disk* free space in KB. Exposed in SNMP as `diskfree`
+- Added `proc_mhz` at request of forum user Max to output CPU overall MHz. Tested only for Intel CPU under ESXi
 - Install logging more clearly states usage of single and double quotes in sample calls  
 
 ###2020.04.01
