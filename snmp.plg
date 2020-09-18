@@ -40,10 +40,6 @@
 
 <!ENTITY diskfreefile    "disk_free_space.sh">
 <!ENTITY diskfreemd5     "a8d1fd8cd0a07722e586697bdda88bfb">
-
-<!ENTITY community       "public">
-<!ENTITY location        "Here">
-<!ENTITY contact         "root@tower">
 ]>
 
 <PLUGIN  name="&name;"
