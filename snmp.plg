@@ -30,7 +30,7 @@
 <!ENTITY iconfilemd5     "4e527e3b03b278774f8044ca148d7e28">
 
 <!ENTITY conffile        "snmpd.conf">
-<!ENTITY conffilemd5     "49799af06226cf57b56166e34dd23674">
+<!ENTITY conffilemd5     "1aaefb7d48e39b38df13914c0fdf8d8f">
 
 <!ENTITY tempsfile       "drive_temps.sh">
 <!ENTITY tempsmd5        "71a809c1e34dfcc99d2f375c1ca89aa5">
