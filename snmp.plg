@@ -202,9 +202,8 @@ cp &usbcfgdir;/&tempsfile; &workingdir;/&tempsfile;
 cp &usbcfgdir;/&sharefile; &workingdir;/&sharefile;
 cp &usbcfgdir;/&diskfreefile; &workingdir;/&diskfreefile;
 
-chmod a+x &workingdir;/&tempsfile;
-chmod a+x &workingdir;/&sharefile;
-chmod a+x &workingdir;/&diskfreefile;
+chmod a+r &workingdir;/&conffile;
+chmod a+x &workingdir;/&tempsfile; &workingdir;/&sharefile; &workingdir;/&diskfreefile;
 
 
 echo "Copy complete!"
