@@ -157,6 +157,12 @@ monitoring tools like Observium or Grafana.
 <MD5>&iconfilemd5;</MD5>
 </FILE>
 
+<!-- Download and cache the SNMP daemon configuration -->
+<FILE Name="&usbcfgdir;/&conffile;">
+<URL>&rawGitURL;/&conffile;</URL>
+<MD5>&conffilemd5;</MD5>
+</FILE>
+
 <!-- Download and cache the drive temperature script -->
 <FILE Name="&usbcfgdir;/&tempsfile;">
 <URL>&rawGitURL;/&tempsfile;</URL>
