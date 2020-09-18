@@ -4,7 +4,7 @@
 <!ENTITY name            "snmp">
 <!ENTITY author          "kubedzero">
 
-<!ENTITY pluginVer       "2020.09.18">
+<!ENTITY pluginVer       "2020.09.18b">
 <!ENTITY minOSVer        "6.7.0">
 
 <!ENTITY pluginURL       "https://github.com/&author;/unraid-snmp/raw/test/snmp.plg">
@@ -189,6 +189,10 @@ cp &usbcfgdir;/&iconfile; &workingdir;/&iconfile;
 cp &usbcfgdir;/&tempsfile; &workingdir;/&tempsfile;
 cp &usbcfgdir;/&sharefile; &workingdir;/&sharefile;
 cp &usbcfgdir;/&diskfreefile; &workingdir;/&diskfreefile;
+
+chmod a+x &workingdir;/&tempsfile;
+chmod a+x &workingdir;/&sharefile;
+chmod a+x &workingdir;/&diskfreefile;
 
 
 echo "Copy complete!"
