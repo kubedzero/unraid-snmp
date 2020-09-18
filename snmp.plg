@@ -4,7 +4,7 @@
 <!ENTITY name            "snmp">
 <!ENTITY author          "kubedzero">
 
-<!ENTITY pluginVer       "2020.09.18b">
+<!ENTITY pluginVer       "2020.09.18c">
 <!ENTITY minOSVer        "6.7.0">
 
 <!ENTITY pluginURL       "https://github.com/&author;/unraid-snmp/raw/test/snmp.plg">
@@ -28,6 +28,9 @@
 
 <!ENTITY iconfile        "snmp.png">
 <!ENTITY iconfilemd5     "4e527e3b03b278774f8044ca148d7e28">
+
+<!ENTITY conffile        "snmpd.conf">
+<!ENTITY conffilemd5     "78254570d34fba7c74472fcbc6d73ab6">
 
 <!ENTITY tempsfile       "drive_temps.sh">
 <!ENTITY tempsmd5        "71a809c1e34dfcc99d2f375c1ca89aa5">
@@ -67,7 +70,9 @@
 - Added `proc_mhz.sh` at request of forum user Max to output CPU overall MHz. 
  - Exposed in SNMP as `cpumhz`
  - Tested only for Intel CPU under ESXi
-- Install logging more clearly states usage of single and double quotes in sample calls  
+- Install logging more clearly states usage of single and double quotes in sample calls
+- Migrate `snmpd.conf` from inline file to independent file to ensure proper updating
+ - If the file already exists during plugin update, no attempt is made to update its contents 
 
 ###2020.04.01
 - Cache downloaded files on USB to support offline installation
@@ -124,7 +129,7 @@
 **SNMP**
 
 Installs and configures SNMP, the Simple Network Management Protocol. SNMP can be used to expose server information to
-monitoring tools like Observium.
+monitoring tools like Observium or Grafana.
 </INLINE>
 </FILE>
 
@@ -185,6 +190,7 @@ echo "+=========================================================================
 
 chmod 0755 &workingdir;
 
+cp &usbcfgdir;/&conffile; &workingdir;/&conffile;
 cp &usbcfgdir;/&iconfile; &workingdir;/&iconfile;
 cp &usbcfgdir;/&tempsfile; &workingdir;/&tempsfile;
 cp &usbcfgdir;/&sharefile; &workingdir;/&sharefile;
@@ -197,48 +203,6 @@ chmod a+x &workingdir;/&diskfreefile;
 
 echo "Copy complete!"
 exit 0
-</INLINE>
-</FILE>
-
-<!-- Create the config file in the working directory -->
-<FILE Name="&workingdir;/snmpd.conf">
-<INLINE>
-rocommunity &community;
-syslocation &location;
-syscontact &contact;
-disk /mnt/disk1
-disk /mnt/disk2
-disk /mnt/disk3
-disk /mnt/disk4
-disk /mnt/disk5
-disk /mnt/disk6
-disk /mnt/disk7
-disk /mnt/disk8
-disk /mnt/disk9
-disk /mnt/disk10
-disk /mnt/disk11
-disk /mnt/disk12
-disk /mnt/disk13
-disk /mnt/disk14
-disk /mnt/disk15
-disk /mnt/disk16
-disk /mnt/disk17
-disk /mnt/disk18
-disk /mnt/disk19
-disk /mnt/disk20
-disk /mnt/disk21
-disk /mnt/disk22
-disk /mnt/disk23
-disk /mnt/disk24
-disk /mnt/disk25
-disk /mnt/disk26
-disk /mnt/disk27
-disk /mnt/disk28
-disk /mnt/cache
-
-extend disktemp &workingdir;/&tempsfile;
-extend sharefree &workingdir;/&sharefile;
-extend diskfree &workingdir;/&diskfreefile;
 </INLINE>
 </FILE>
 
