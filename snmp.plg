@@ -27,7 +27,7 @@
 <!ENTITY perlpkg         "perl-5.32.0-x86_64-1.txz">
 <!ENTITY perlpkgmd5      "6993da990e2decbae18e92c5bf615dbe">
 
-<!ENTITY pluginpkg       "snmp-2020.09.18c-x86_64-1.txz">
+<!ENTITY pluginpkg       "unraid-snmp-2020.09.18c-x86_64-1.txz">
 <!ENTITY pluginpkgmd5    "4e527e3b03b278774f8044ca148d7e28">
 ]>
 
@@ -43,7 +43,7 @@
 ##SNMP
 
 ###2020.09.13 test
-- Migrate SNMP plugin to .tgz style install 
+- Migrate SNMP plugin to .txz style install 
 - Updated net-snmp from 5.8-5 to 5.9
 - Updated libnl from 1.1.4 to 1.1.4-3
 - Perl 5.32.0 declared as dependency instead of separate install. 

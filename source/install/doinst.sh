@@ -58,6 +58,6 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     # Exit with the code of the SNMP daemon startup
     exit $?
 else
-    echo "/etc/rc.d/rc.snmpd did not exist. Is net-snmp installed?"
+    echo "Exiting: /etc/rc.d/rc.snmpd did not exist. Is net-snmp installed?"
     exit 1
 fi
