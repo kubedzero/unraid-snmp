@@ -1,48 +1,47 @@
 <?xml version='1.0' standalone='yes'?>
 
 <!DOCTYPE PLUGIN [
-<!ENTITY name            "snmp">
-<!ENTITY author          "kubedzero">
-<!ENTITY gitBranch       "test">
+<!ENTITY name        "snmp">
+<!ENTITY author      "kubedzero">
+<!ENTITY gitbranch   "test">
 
-<!ENTITY pluginVer       "2020.09.18c">
-<!ENTITY minOSVer        "6.7.0">
+<!ENTITY pluginver   "2020.09.19">
+<!ENTITY minosver    "6.7.0">
 
-<!ENTITY pluginURL       "https://github.com/&author;/unraid-snmp/raw/&gitBranch;/snmp.plg">
-<!ENTITY rawGitURL       "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitBranch;">
-<!ENTITY supportURL      "https://forums.unraid.net/topic/39339-plug-in-snmp">
+<!ENTITY pluginurl   "https://github.com/&author;/unraid-snmp/raw/&gitbranch;/snmp.plg">
+<!ENTITY supporturl  "https://forums.unraid.net/topic/39339-plug-in-snmp">
+<!ENTITY pkgurl      "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;/packages">
 
-<!-- Defines the working directory where README, conf, other files will be created -->
-<!ENTITY workingdir      "/usr/local/emhttp/plugins/&name;">
-<!-- Defines the persistent (USB) directory where downloaded files are cached -->
-<!ENTITY usbcfgdir       "/boot/config/plugins/&name;">
-<!ENTITY pkgurl          "&rawGitURL;/packages">
+<!-- Defines the destination directory where all final files will be stored -->
+<!ENTITY workingdir  "/usr/local/emhttp/plugins/&name;">
+<!-- Defines the persistent (USB) directory where downloaded packages are cached -->
+<!ENTITY usbcfgdir   "/boot/config/plugins/&name;">
 
-<!ENTITY snmppkg         "net-snmp-5.9-x86_64-1.txz">
-<!ENTITY snmppkgmd5      "b4f6f3dfef81d1f58171012800b8ffc6">
+<!ENTITY snmppkg     "net-snmp-5.9-x86_64-1.txz">
+<!ENTITY snmppkgmd5  "b4f6f3dfef81d1f58171012800b8ffc6">
 
-<!ENTITY libnlpkg        "libnl-1.1.4-x86_64-3.txz">
-<!ENTITY libnlpkgmd5     "82c9374aaa9c7f4efbde8041f87d6053">
+<!ENTITY libnlpkg    "libnl-1.1.4-x86_64-3.txz">
+<!ENTITY libnlpkgmd5 "82c9374aaa9c7f4efbde8041f87d6053">
 
-<!ENTITY perlpkg         "perl-5.32.0-x86_64-1.txz">
-<!ENTITY perlpkgmd5      "6993da990e2decbae18e92c5bf615dbe">
+<!ENTITY perlpkg     "perl-5.32.0-x86_64-1.txz">
+<!ENTITY perlpkgmd5  "6993da990e2decbae18e92c5bf615dbe">
 
-<!ENTITY pluginpkg       "unraid-snmp-2020.09.18c-x86_64-1.txz">
-<!ENTITY pluginpkgmd5    "4e527e3b03b278774f8044ca148d7e28">
+<!ENTITY pluginpkg   "unraid-snmp-&pluginver;-x86_64-1.txz">
+<!ENTITY pluginpkgmd "bd06aa8b36e2b79599a713376c1cc885">
 ]>
 
 <PLUGIN  name="&name;"
          author="&author;"
-         version="&pluginVer;"
-         pluginURL="&pluginURL;"
-         support="&supportURL;"
-         min="&minOSVer;"
+         version="&pluginver;"
+         pluginURL="&pluginurl;"
+         support="&supporturl;"
+         min="&minosver;"
          >
 
 <CHANGES>
 ##SNMP
 
-###2020.09.13 test
+###2020.09.19
 - Migrate SNMP plugin to .txz style install 
 - Updated net-snmp from 5.8-5 to 5.9
 - Updated libnl from 1.1.4 to 1.1.4-3
@@ -132,7 +131,7 @@
 <MD5>&pluginpkgmd5;</MD5>
 </FILE>
 
-<!-- Update rc.d to use our config file, restart snmpd, and test it -->
+<!-- Test SNMP functionality -->
 <FILE Run="/bin/bash">
 <INLINE>
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
@@ -167,20 +166,14 @@ snmpwalk -v 2c -c public localhost nsExtendOutLine
 
 echo ""
 echo ""
-
-exit 0
-</INLINE>
-</FILE>
-
-<!-- The 'post-install' script -->
-<FILE Run="/bin/bash">
-<INLINE>
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; has been installed."
-echo " Version: &pluginVer;"
+echo " Version: &pluginver;"
 echo "-----------------------------------------------------------"
 echo ""
+
+exit 0
 </INLINE>
 </FILE>
 
@@ -196,7 +189,10 @@ echo "+=========================================================================
 echo "| Uninstalling packages"
 echo "+=============================================================================="
 
-# Uninstall the package
+# Uninstall the unraid-snmp package
+removepkg $(basename &pluginpkg; .txz) | grep -v -e '  --&gt; Deleting'
+
+# Uninstall the net-snmp package
 removepkg $(basename &snmppkg; .txz) | grep -v -e '  --&gt; Deleting'
 
 # Uninstall prerequisites in the reverse order of their installation

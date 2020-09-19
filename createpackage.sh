@@ -27,6 +27,8 @@ if command -v makepkg > /dev/null; then
 
     echo "Creating Slackware package $file_name"
     makepkg --linkadd y --chown n "$file_name"
+
+    echo "MD5 of $file_name is $(md5sum $file_name | awk '{print $1}')"
 else
     echo "Binary makepkg not found, is your OS Slackware?"
 fi
