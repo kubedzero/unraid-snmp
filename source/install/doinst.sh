@@ -31,18 +31,18 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     mv --backup /usr/local/emhttp/plugins/snmp/snmpd.conf /etc/snmp/snmpd.conf
 
     # Define the additional flags we want to add into the SNMP daemon startup
-    # Spaces at beginning and end of string to separate from other flags
+    # Spaces at end of string to separate from other flags
     # 1=a=alert, 2=c=crit, 3=e=err, 4=w=warn, 5=n=notice, 6=i=info, 7=d=debug
-    new_flags=" -LS0-6d -Lf /dev/null "
+    new_flags="-LF 0-5 /var/log/snmpd.log "
 
     # Get existing OPTIONS from file, keeping only what's in double quotes
     # https://stackoverflow.com/questions/35636323/extracting-a-string-between-two-quotes-in-bash
     options=$(grep "OPTIONS=" /etc/rc.d/rc.snmpd | cut -d'"' -f 2)
-    # Check that flags haven't already been added
+    # Check that new flags haven't already been added
     if [[ $options != *"-L"* ]]; then
         # Concatenate the new flags with the old
         options=$new_flags$options
-        echo "Editing SNMP startup flags to be [$options]"
+        echo "Editing SNMP startup options to be [$options]"
         # Replace the line beginning with OPTIONS= with a custom set
         # Use a custom delimiter | to avoid collisions of sed and variable use of /
         # Escape the start quote and end quote when we recreate the line
@@ -55,6 +55,19 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     echo "Restart SNMP daemon now that we've adjusted how it starts up"
     # Make sure error logging is going to STDOUT so it prints in install logs
     bash /etc/rc.d/rc.snmpd start 2>&1
+
+    # Wait for daemon startup to complete by watching for PID file
+    # Send error output of "No such file or directory" to /dev/null
+    count=0
+    while [[ -z "$(cat /var/run/snmpd 2> /dev/null)" ]]; do
+        printf "."
+        sleep 1
+        count=$((count+1))
+        if [ $count -ge 10 ]; then
+            echo "SNMP may be having troubles starting, check arguments"
+            exit 1
+        fi
+    done
     echo "PID of started SNMP daemon is $(cat /var/run/snmpd)"
 
     # Exit with the code of the SNMP daemon startup
