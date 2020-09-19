@@ -54,7 +54,7 @@
  - Avoids disk spinup, preferring to skip temperature for that disk
 - Added `disk_free_space.sh` to print free KB in /boot or /mnt/disk* or /mnt/cache
  - Exposed in SNMP as `diskfree`
-- Added `proc_mhz.sh` at request of forum user Max to output CPU overall MHz 
+- Added `cpu_mhz.sh` at request of forum user Max to output CPU overall MHz 
  - Exposed in SNMP as `cpumhz`
  - Tested only for an Intel CPU virtualized under ESXi
 - Install logging more clearly states usage of single and double quotes in sample calls

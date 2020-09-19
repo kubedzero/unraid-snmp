@@ -12,10 +12,10 @@ chmod a+r "$directory"
 cd "$directory"
 
 echo "Set shell script executable permissions"
+chmod a+x cpu_mhz.sh
 chmod a+x disk_free_space.sh
-chmod a+x drive_temps.sh
+chmod a+x disk_temps.sh
 chmod a+x share_free_space.sh
-chmod a+x proc_mhz.sh
 
 echo "Set read only permissions for other files"
 chmod a+r snmpd.conf

@@ -8,12 +8,12 @@ set -euo pipefail
 
 # Define the working directory in which files will live
 working_dir=/tmp/plugins/snmp/
-# Define the file that will hold drive temperatures
-cache_file_name=drive_temps.txt
+# Define the file that will hold disk temperatures
+cache_file_name=disk_temps.txt
 # Define the lock file that will prevent multiple simultaneous writes
-cache_lock_name=drive_temps.lock
+cache_lock_name=disk_temps.lock
 # Define the log output for errors
-cache_log_name=drive_temps.log
+cache_log_name=disk_temps.log
 
 # Update file name variables with full paths
 cache_file_full_path="$working_dir$cache_file_name"
@@ -47,7 +47,7 @@ function update_cache_file {
     # Call mdcmd to get disk info.
     mdcmd_data=$(mdcmd status)
     # Find instances of ID and Name with something after the = character
-    dev_id_data=$(grep 'rdevId.*=.' <<< $mdcmd_data)
+    dev_id_data=$(grep 'rdevId.*=.' <<< "$mdcmd_data")
     dev_name_data=$(grep 'rdevName.*=.' <<< $mdcmd_data)
 
     # Store the line count of dev IDs
@@ -72,8 +72,8 @@ function update_cache_file {
         dev_name_line=$(sed -n "${i}"p <<< "$dev_name_data")
 
         # Check that each line has the same mdcmd group number
-        id_group_num=$(echo $dev_id_line | sed 's#.*\.\(.*\)=.*#\1#')
-        name_group_num=$(echo $dev_name_line | sed 's#.*\.\(.*\)=.*#\1#')
+        id_group_num=$(echo "$dev_id_line" | sed 's#.*\.\(.*\)=.*#\1#')
+        name_group_num=$(echo "$dev_name_line" | sed 's#.*\.\(.*\)=.*#\1#')
 
         if [[ "$id_group_num" != "$name_group_num" ]]
         then
@@ -82,23 +82,23 @@ function update_cache_file {
         fi
 
         # Format the ID into /dev/sdc, /dev/sdN, etc
-        dev_path=$(echo $dev_id_line | sed 's#.*=#/dev/#')
+        dev_path=$(echo "$dev_id_line" | sed 's#.*=#/dev/#')
         # Format the name by removing the mdcmd group info and equal sign
-        drive_name=$(echo $dev_name_line | sed 's/.*=//')
+        disk_name=$(echo "$dev_name_line" | sed 's/.*=//')
 
         # Call smartctl and attempt to get the attributes via -A
         # Call with --nocheck standby to exit early if power mode is STANDBY
-        # NOTE: WD drives need to be spun up for attributes to show
-        smartctl_output=$(smartctl --nocheck standby -A $dev_path)
+        # NOTE: WD disks need to be spun up for attributes to show
+        smartctl_output=$(smartctl --nocheck standby -A "$dev_path")
 
-        # Check if the drive is reported to be in standby mode
+        # Check if the disk is reported to be in standby mode
         if [[ $smartctl_output == *"Device is in STANDBY mode"* ]]
         then
-            echo "Drive $dev_path $drive_name in standby, reporting temperature as -2"
-            # Append the formatted drive name and standby temperature to the cache file
-            echo "$drive_name: -2" >> $cache_file_full_path
+            echo "Disk $dev_path $disk_name in standby, reporting temperature as -2"
+            # Append the formatted disk name and standby temperature to the cache file
+            echo "$disk_name: -2" >> $cache_file_full_path
         else
-            # Drive was not in standby and should have a temperature to read
+            # Disk was not in standby and should have a temperature to read
             temperature=$(echo "$smartctl_output" | grep -m 1 -i Temperature_Celsius | awk '{print $10}')
 
             # Check that temp is non-empty and numeric, putting temp as -1 otherwise
@@ -109,15 +109,15 @@ function update_cache_file {
             else
                 if [[ $temperature =~ ^[+-]?[0-9]*$ || $temperature =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]
                 then
-                    echo "Drive $dev_path $drive_name temp is $temperature C"
-                    # Append the formatted drive name and real temperature to the cache file
-                    echo "$drive_name: $temperature" >> $cache_file_full_path
+                    echo "Disk $dev_path $disk_name temp is $temperature C"
+                    # Append the formatted disk name and real temperature to the cache file
+                    echo "$disk_name: $temperature" >> $cache_file_full_path
                 else
                     echo "Encountered a non-float, non-integer temperature, reporting temperature as -1"
                 fi
             fi
-            # Append the formatted drive name and error temperature to the cache file
-            echo "$drive_name: -1" >> $cache_file_full_path
+            # Append the formatted disk name and error temperature to the cache file
+            echo "$disk_name: -1" >> $cache_file_full_path
         fi
 
     done
