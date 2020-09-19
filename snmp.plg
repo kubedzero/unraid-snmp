@@ -3,19 +3,20 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name            "snmp">
 <!ENTITY author          "kubedzero">
+<!ENTITY gitBranch       "test">
 
 <!ENTITY pluginVer       "2020.09.18c">
 <!ENTITY minOSVer        "6.7.0">
 
-<!ENTITY pluginURL       "https://github.com/&author;/unraid-snmp/raw/test/snmp.plg">
-<!ENTITY rawGitURL       "https://raw.githubusercontent.com/&author;/unraid-snmp/test">
+<!ENTITY pluginURL       "https://github.com/&author;/unraid-snmp/raw/&gitBranch;/snmp.plg">
+<!ENTITY rawGitURL       "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitBranch;">
 <!ENTITY supportURL      "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
 <!-- Defines the working directory where README, conf, other files will be created -->
 <!ENTITY workingdir      "/usr/local/emhttp/plugins/&name;">
 <!-- Defines the persistent (USB) directory where downloaded files are cached -->
 <!ENTITY usbcfgdir       "/boot/config/plugins/&name;">
-<!ENTITY pkgurl          "&rawGitURL;/packages">
+<!ENTITY dependurl       "&rawGitURL;/dependencies">
 
 <!ENTITY snmppkg         "net-snmp-5.9-x86_64-1.txz">
 <!ENTITY snmppkgmd5      "b4f6f3dfef81d1f58171012800b8ffc6">
@@ -54,6 +55,7 @@
 ##SNMP
 
 ###2020.09.13 test
+- Migrate SNMP plugin to .tgz style install 
 - Updated net-snmp from 5.8-5 to 5.9
 - Updated libnl from 1.1.4 to 1.1.4-3
 - Perl 5.32.0 declared as dependency instead of separate install. 
@@ -67,8 +69,7 @@
  - Exposed in SNMP as `cpumhz`
  - Tested only for Intel CPU under ESXi
 - Install logging more clearly states usage of single and double quotes in sample calls
-- Migrate `snmpd.conf` from inline file to independent file to ensure proper updating
- - If the file already exists during plugin update, no attempt is made to update its contents 
+
 
 ###2020.04.01
 - Cache downloaded files on USB to support offline installation
@@ -131,19 +132,19 @@ monitoring tools like Observium or Grafana.
 
 <!-- Download, cache and install dependent perl package shared with Nerd Pack -->
 <FILE Name="&usbcfgdir;/&perlpkg;" Run="upgradepkg --install-new">
-<URL>&pkgurl;/&perlpkg;</URL>
+<URL>&depurl;/&perlpkg;</URL>
 <MD5>&perlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install dependent libnl package -->
 <FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
-<URL>&pkgurl;/&libnlpkg;</URL>
+<URL>&depurl;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install the SNMP package -->
 <FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
-<URL>&pkgurl;/&snmppkg;</URL>
+<URL>&depurl;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
