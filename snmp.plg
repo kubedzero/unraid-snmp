@@ -16,7 +16,7 @@
 <!ENTITY workingdir      "/usr/local/emhttp/plugins/&name;">
 <!-- Defines the persistent (USB) directory where downloaded files are cached -->
 <!ENTITY usbcfgdir       "/boot/config/plugins/&name;">
-<!ENTITY dependurl       "&rawGitURL;/dependencies">
+<!ENTITY pkgurl          "&rawGitURL;/packages">
 
 <!ENTITY snmppkg         "net-snmp-5.9-x86_64-1.txz">
 <!ENTITY snmppkgmd5      "b4f6f3dfef81d1f58171012800b8ffc6">
@@ -27,20 +27,8 @@
 <!ENTITY perlpkg         "perl-5.32.0-x86_64-1.txz">
 <!ENTITY perlpkgmd5      "6993da990e2decbae18e92c5bf615dbe">
 
-<!ENTITY iconfile        "snmp.png">
-<!ENTITY iconfilemd5     "4e527e3b03b278774f8044ca148d7e28">
-
-<!ENTITY conffile        "snmpd.conf">
-<!ENTITY conffilemd5     "1aaefb7d48e39b38df13914c0fdf8d8f">
-
-<!ENTITY tempsfile       "drive_temps.sh">
-<!ENTITY tempsmd5        "71a809c1e34dfcc99d2f375c1ca89aa5">
-
-<!ENTITY sharefile       "share_free_space.sh">
-<!ENTITY sharemd5        "dc5c08c485bc41a45d233b661f69de42">
-
-<!ENTITY diskfreefile    "disk_free_space.sh">
-<!ENTITY diskfreemd5     "a8d1fd8cd0a07722e586697bdda88bfb">
+<!ENTITY pluginpkg       "snmp-2020.09.18c-x86_64-1.txz">
+<!ENTITY pluginpkgmd5    "4e527e3b03b278774f8044ca148d7e28">
 ]>
 
 <PLUGIN  name="&name;"
@@ -61,13 +49,13 @@
 - Perl 5.32.0 declared as dependency instead of separate install. 
  - Plugin maintainer should keep the version in sync with Nerd Pack
 - Refactored `share_free_space.sh` for added clarity
-- Refactored `drive_temps.sh` for clearer cached temperature behavior. 
+- Refactored `drive_temps.sh` for clearer cached temperature behavior 
  - Caching present for rapid SNMP calls and large arrays
-- Added `disk_free_space.sh` for /boot and /mnt/disk* free space in KB. 
+- Added `disk_free_space.sh` to print free KB in /boot and /mnt/disk* 
  - Exposed in SNMP as `diskfree`
-- Added `proc_mhz.sh` at request of forum user Max to output CPU overall MHz. 
+- Added `proc_mhz.sh` at request of forum user Max to output CPU overall MHz 
  - Exposed in SNMP as `cpumhz`
- - Tested only for Intel CPU under ESXi
+ - Tested only for an Intel CPU virtualized under ESXi
 - Install logging more clearly states usage of single and double quotes in sample calls
 
 
@@ -120,92 +108,28 @@
 </CHANGES>
 
 
-<!-- Create plugin README.md file used in the Plugin Web UI-->
-<FILE Name="&workingdir;/README.md">
-<INLINE>
-**SNMP**
-
-Installs and configures SNMP, the Simple Network Management Protocol. SNMP can be used to expose server information to
-monitoring tools like Observium or Grafana.
-</INLINE>
-</FILE>
-
 <!-- Download, cache and install dependent perl package shared with Nerd Pack -->
 <FILE Name="&usbcfgdir;/&perlpkg;" Run="upgradepkg --install-new">
-<URL>&depurl;/&perlpkg;</URL>
+<URL>&pkgurl;/&perlpkg;</URL>
 <MD5>&perlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install dependent libnl package -->
 <FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
-<URL>&depurl;/&libnlpkg;</URL>
+<URL>&pkgurl;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
-<!-- Download, cache and install the SNMP package -->
+<!-- Download, cache and install the net-snmp package -->
 <FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
-<URL>&depurl;/&snmppkg;</URL>
+<URL>&pkgurl;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
-<!-- Download and cache the plugin icon -->
-<FILE Name="&usbcfgdir;/&iconfile;">
-<URL>&rawGitURL;/&iconfile;</URL>
-<MD5>&iconfilemd5;</MD5>
-</FILE>
-
-<!-- Download and cache the SNMP daemon configuration -->
-<FILE Name="&usbcfgdir;/&conffile;">
-<URL>&rawGitURL;/&conffile;</URL>
-<MD5>&conffilemd5;</MD5>
-</FILE>
-
-<!-- Download and cache the drive temperature script -->
-<FILE Name="&usbcfgdir;/&tempsfile;">
-<URL>&rawGitURL;/&tempsfile;</URL>
-<MD5>&tempsmd5;</MD5>
-</FILE>
-
-<!-- Download and cache the share free space script -->
-<FILE Name="&usbcfgdir;/&sharefile;">
-<URL>&rawGitURL;/&sharefile;</URL>
-<MD5>&sharemd5;</MD5>
-</FILE>
-
-<!-- Download and cache the disk free space script -->
-<FILE Name="&usbcfgdir;/&diskfreefile;">
-<URL>&rawGitURL;/&diskfreefile;</URL>
-<MD5>&diskfreemd5;</MD5>
-</FILE>
-
-<!-- Copy into working directory and set executable permissions -->
-<FILE Run="/bin/bash">
-<INLINE>
-# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# exit script early if we encounter an error
-set -e
-
-echo ""
-echo "+=============================================================================="
-echo "| Copy files from &usbcfgdir;"
-echo "| into &workingdir; and set permissions"
-echo "+=============================================================================="
-
-chmod 0755 &workingdir;
-
-cp &usbcfgdir;/&conffile; &workingdir;/&conffile;
-cp &usbcfgdir;/&iconfile; &workingdir;/&iconfile;
-cp &usbcfgdir;/&tempsfile; &workingdir;/&tempsfile;
-cp &usbcfgdir;/&sharefile; &workingdir;/&sharefile;
-cp &usbcfgdir;/&diskfreefile; &workingdir;/&diskfreefile;
-
-chmod a+r &workingdir;/&conffile;
-chmod a+x &workingdir;/&tempsfile; &workingdir;/&sharefile; &workingdir;/&diskfreefile;
-
-
-echo "Copy complete!"
-exit 0
-</INLINE>
+<!-- Download, cache and install the Unraid Plugin package -->
+<FILE Name="&usbcfgdir;/&pluginpkg;" Run="upgradepkg --install-new">
+<URL>&pkgurl;/&pluginpkg;</URL>
+<MD5>&pluginpkgmd5;</MD5>
 </FILE>
 
 <!-- Update rc.d to use our config file, restart snmpd, and test it -->
@@ -214,21 +138,6 @@ exit 0
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 # exit script early if we encounter an error
 set -e
-
-echo ""
-echo "+=============================================================================="
-echo "| Updating /etc/rc.d/rc.snmpd to use our config file and to reduce logging"
-echo "+=============================================================================="
-
-bash /etc/rc.d/rc.snmpd stop
-
-# replace the default snmpd.conf with the custom config in our working directory
-sed -i.old -e 's#/etc/snmp/snmpd.conf#&workingdir;/snmpd.conf#g' /etc/rc.d/rc.snmpd
-
-# prepend `-LF w /var/log/snmpd.log ` (including the space) into existing OPTIONS
-sed -i.old -e 's#OPTIONS="#OPTIONS="-LF w /var/log/snmpd.log #g' /etc/rc.d/rc.snmpd
-
-bash /etc/rc.d/rc.snmpd start
 
 echo ""
 echo "+=============================================================================="
