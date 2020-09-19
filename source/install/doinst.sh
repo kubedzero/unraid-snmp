@@ -6,14 +6,16 @@
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -euo pipefail
 
-echo "Set directory permissions and move into it"
-chmod a+r /usr/local/emhttp/plugins/snmp
-cd /usr/local/emhttp/plugins/snmp
+directory="/usr/local/emhttp/plugins/snmp/"
+echo "Set permissions and move into dir $directory"
+chmod a+r "$directory"
+cd "$directory"
 
 echo "Set shell script executable permissions"
 chmod a+x disk_free_space.sh
 chmod a+x drive_temps.sh
 chmod a+x share_free_space.sh
+chmod a+x proc_mhz.sh
 
 echo "Set read only permissions for other files"
 chmod a+r snmpd.conf
@@ -27,7 +29,7 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     echo "Stop SNMP daemon if it is currently running"
     bash /etc/rc.d/rc.snmpd stop
 
-    echo "Replace the default SNMP config with our own, backing up the original"
+    echo "Replace default snmpd.conf with our own, backing up the original"
     mv --backup /usr/local/emhttp/plugins/snmp/snmpd.conf /etc/snmp/snmpd.conf
 
     # Define the additional flags we want to add into the SNMP daemon startup
@@ -42,17 +44,17 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     if [[ $options != *"-L"* ]]; then
         # Concatenate the new flags with the old
         options=$new_flags$options
-        echo "Editing SNMP startup options to be [$options]"
+        echo "Editing SNMP startup options in rc.snmpd to be [$options]"
         # Replace the line beginning with OPTIONS= with a custom set
         # Use a custom delimiter | to avoid collisions of sed and variable use of /
         # Escape the start quote and end quote when we recreate the line
         # https://stackoverflow.com/questions/9366816/sed-fails-with-unknown-option-to-s-error
         sed --in-place=.bak --expression "s|^OPTIONS=.*|OPTIONS=\"$options\"|" /etc/rc.d/rc.snmpd
     else
-        echo "SNMP logging flag already present, skipping modification"
+        echo "SNMP logging flag already present in rc.snmpd, skipping modification"
     fi
 
-    echo "Restart SNMP daemon now that we've adjusted how it starts up"
+    echo "Restart SNMP daemon now that we've adjusted how rc.snmpd starts it"
     # Make sure error logging is going to STDOUT so it prints in install logs
     bash /etc/rc.d/rc.snmpd start 2>&1
 

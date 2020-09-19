@@ -30,7 +30,7 @@ do
     # https://unix.stackexchange.com/questions/151654/checking-if-an-input-number-is-an-integer
     if [[ -z "$disk_name" || ! $disk_free_kib =~ ^[0-9]+$ ]]
     then
-        $ECHO "Exiting: Encountered an empty disk name or non-numeric free space"
+        echo "Exiting: Encountered an empty disk name or non-numeric free space"
         exit 1
     fi
 
