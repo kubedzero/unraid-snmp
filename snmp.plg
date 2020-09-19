@@ -136,6 +136,9 @@
 <!-- Test SNMP functionality -->
 <FILE Run="/bin/bash">
 <INLINE>
+
+# NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
+
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 # exit script early if we encounter an error
 set -e
@@ -185,6 +188,9 @@ exit 0
 <!-- The 'remove' script -->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
+
+# NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
+
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 # exit script early if we encounter an error
 set -e

@@ -10,15 +10,15 @@ ini_input=/var/local/emhttp/shares.ini
 
 # Store Share names and KB free
 # Find names by getting lines with an open bracket "["
-share_names=$(grep '\[' $ini_input)
+share_names=$(grep '^\[' $ini_input)
 # Find kilobytes free by getting lines with string "free="
-share_free=$(grep 'free=' $ini_input)
+share_free=$(grep '^free=' $ini_input)
 
 # Store the line count of share_names
 share_name_count=$(echo "$share_names" | wc -l)
 
 # If counts differ, exit early
-if [ "$share_name_count" -ne "$(echo "$share_names" | wc -l)" ]
+if [ "$share_name_count" -ne "$(echo "$share_free" | wc -l)" ]
 then
     echo "Exiting: Name count [$share_name_count] differs from Free count"
     exit 1
@@ -42,7 +42,7 @@ do
     # https://unix.stackexchange.com/questions/151654/checking-if-an-input-number-is-an-integer
     if [[ -z "$share_name" || ! $free_kibibytes =~ ^[0-9]+$ ]]
     then
-        $ECHO "Exiting: Encountered an empty share name or non-numeric free space"
+        echo "Exiting: Encountered an empty share name or non-numeric free space"
         exit 1
     fi
 
