@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.19f">
+<!ENTITY pluginver     "2020.09.19g">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY pluginurl     "https://github.com/&author;/unraid-snmp/raw/&gitbranch;/snmp.plg">
@@ -27,7 +27,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "9dad66987ca113a650ca3793886dbfad">
+<!ENTITY pluginpkgmd5  "9205545be4e6ef9f7a532e4abea90543">
 ]>
 
 <PLUGIN  name="&name;"
@@ -43,14 +43,16 @@
 
 ###2020.09.19
 - Migrate SNMP plugin to .txz style install 
+- Optimized plugin removal for more complete cleanup
 - Updated net-snmp from 5.8-5 to 5.9
 - Updated libnl from 1.1.4 to 1.1.4-3
 - Perl 5.32.0 declared as dependency instead of separate install. 
  - Plugin maintainer should keep the version in sync with Nerd Pack
 - Refactored `share_free_space.sh` for added clarity
-- Refactored `drive_temps.sh` for clearer cached temperature behavior 
+- Refactored `drive_temps.sh` 
  - Caching present for rapid SNMP calls and large arrays
-- Added `disk_free_space.sh` to print free KB in /boot and /mnt/disk* 
+ - Avoids disk spinup, preferring to skip temperature for that disk
+- Added `disk_free_space.sh` to print free KB in /boot or /mnt/disk* or /mnt/cache
  - Exposed in SNMP as `diskfree`
 - Added `proc_mhz.sh` at request of forum user Max to output CPU overall MHz 
  - Exposed in SNMP as `cpumhz`
@@ -142,6 +144,7 @@ echo ""
 echo "+=============================================================================="
 echo "| Testing SNMP by listing mounts, /boot should be present"
 echo "+=============================================================================="
+echo ""
 
 results=$(snmpwalk -v 2c localhost -c public hrFSMountPoint 2>&amp;1) || printf "snmpwalk failure"
 if [[ "$results" =~ "/boot" ]]
@@ -154,6 +157,12 @@ else
   exit 1
 fi
 
+echo ""
+echo "+=============================================================================="
+echo "| SNMP Examples"
+echo "+=============================================================================="
+echo ""
+
 printf "\nHere are how sharefree lines look:\n"
 printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
 snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
@@ -162,13 +171,11 @@ printf "\nHere are how all custom extensions look:\n"
 printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
 snmpwalk -v 2c -c public localhost nsExtendOutLine
 
+
 echo ""
-echo ""
-echo ""
-echo "-----------------------------------------------------------"
-echo " &name; has been installed."
-echo " Version: &pluginver;"
-echo "-----------------------------------------------------------"
+echo "+=============================================================================="
+echo "| &name; version &pluginver; has been installed."
+echo "+=============================================================================="
 echo ""
 
 exit 0
@@ -186,8 +193,9 @@ echo ""
 echo "+=============================================================================="
 echo "| Uninstalling packages, removing directories and files"
 echo "+=============================================================================="
+echo ""
 
-echo "stopping SNMP daemon"
+# Shut down the SNMP daemon. It emits its own STDOUT lines when done
 /bin/bash /etc/rc.d/rc.snmpd stop
 
 # Define packages to remove in a multi-line string in inverse order of installation
@@ -222,7 +230,8 @@ do
   removepkg "$pkg_name"
 done &lt; &lt;(printf '%s\n' "$pkgs_to_remove")
 
-echo "TXZ package removal done. Starting directory and file removal"
+printf "\nTXZ package removal done. Starting directory and file removal\n"
+
 # Read through package removal lines, uninstalling each
 while IFS= read -r line
 do
@@ -233,15 +242,15 @@ do
   rm -rf "$line"
 done &lt; &lt;(printf '%s\n' "$dirs_files_to_remove")
 
-echo "Directory and file removal done"
-
-
+printf "\nDirectory and file removal done"
 
 echo ""
 echo "+=============================================================================="
 echo "| &name; has been uninstalled."
 echo "+=============================================================================="
 echo ""
+
+exit 0
 </INLINE>
 </FILE>
 

@@ -9,9 +9,9 @@ set -euo pipefail
 # Run df with only the columns we want, mount point and available kibibytes
 df_output=$(df --output=target --output=avail)
 
-# Filter the output to only the lines we want, those with /boot or /mnt/disk*
+# Filter the output to only the lines we want, those with /boot or /mnt/disk* or /mnt/cache
 # https://phoenixnap.com/kb/grep-multiple-strings
-filtered_df_lines=$(grep -e '/mnt/disk' -e '/boot' <<< "$df_output")
+filtered_df_lines=$(grep -e '/mnt/disk[0-9]' -e '/mnt/cache' -e '/boot' <<< "$df_output")
 
 # Iterate over each line of output
 # https://unix.stackexchange.com/questions/9784/how-can-i-read-line-by-line-from-a-variable-in-bash
