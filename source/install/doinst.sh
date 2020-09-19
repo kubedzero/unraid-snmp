@@ -70,8 +70,7 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     done
     echo "PID of started SNMP daemon is $(cat /var/run/snmpd)"
 
-    # Exit with the code of the SNMP daemon startup
-    exit $?
+    exit 0
 else
     echo "Exiting: /etc/rc.d/rc.snmpd did not exist. Is net-snmp installed?"
     exit 1

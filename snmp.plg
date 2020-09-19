@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.19e">
+<!ENTITY pluginver     "2020.09.19f">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY pluginurl     "https://github.com/&author;/unraid-snmp/raw/&gitbranch;/snmp.plg">
@@ -27,7 +27,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "02acb861181a4787145b14e726a3db36">
+<!ENTITY pluginpkgmd5  "9dad66987ca113a650ca3793886dbfad">
 ]>
 
 <PLUGIN  name="&name;"
@@ -143,24 +143,22 @@ echo "+=========================================================================
 echo "| Testing SNMP by listing mounts, /boot should be present"
 echo "+=============================================================================="
 
-RESULTS=$(snmpwalk -v 1 localhost -c public hrFSMountPoint 2>&amp;1)
-if [[ "$RESULTS" =~ "/boot" ]]
+results=$(snmpwalk -v 2c localhost -c public hrFSMountPoint 2>&amp;1) || printf "snmpwalk failure"
+if [[ "$results" =~ "/boot" ]]
 then
-  echo "Looks like snmpd is working... Output:"
-  echo "$RESULTS"
+  echo "SNMP appears to be working. Output:"
+  echo "$results"
 else
-  echo "Couldn't find /boot mount point in SNMP output. Output:"
-  echo "$RESULTS"
-  echo ""
-  echo ""
+  echo "Couldn't find /boot mount point. SNMP output:"
+  echo "$results"
   exit 1
 fi
 
-printf "\nHere is how share free spaces look:\n"
+printf "\nHere are how sharefree lines look:\n"
 printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
 snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
-printf "\nHere is how all extensions look:\n"
+printf "\nHere are how all custom extensions look:\n"
 printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
 snmpwalk -v 2c -c public localhost nsExtendOutLine
 
@@ -186,39 +184,60 @@ set -e
 
 echo ""
 echo "+=============================================================================="
-echo "| Uninstalling packages"
+echo "| Uninstalling packages, removing directories and files"
 echo "+=============================================================================="
 
-# Uninstall the unraid-snmp package
-removepkg $(basename &pluginpkg; .txz) | grep -v -e '  --&gt; Deleting'
-
-# Uninstall the net-snmp package
-removepkg $(basename &snmppkg; .txz) | grep -v -e '  --&gt; Deleting'
-
-# Uninstall prerequisites in the reverse order of their installation
-removepkg $(basename &libnlpkg; .txz) | grep -v -e '  --&gt; Deleting'
-
+# Define packages to remove in a multi-line string in inverse order of installation
 # NOTE: Skipping package removal of prereqs in Nerd Pack in case other plugins depend on them
-#removepkg $(basename &perlpkg; .txz) | grep -v -e '  --&gt; Deleting'
+pkgs_to_remove="
+&pluginpkg;
+&snmppkg;
+&libnlpkg;
+"
+
+# Define directories and files to remove in a multi-line string
+dirs_files_to_remove="
+&usbcfgdir;
+&workingdir;
+/etc/rc.d/rc.snmpd*
+/etc/snmp/
+/var/lib/net-snmp/
+/var/log/snmpd.log
+"
+
+echo "Starting TXZ package removal"
+# Read through package removal lines, uninstalling each
+while IFS= read -r line
+do
+  # if line is empty, skip to the next iteration
+  [ -z "$line" ] &amp;&amp; continue
+
+  # remove the directory path and extension, leaving just the package name
+  pkg_name="$(basename $line .txz)"
+
+  # perform the package removal
+  removepkg "$pkg_name"
+done < <(printf '%s\n' "$pkgs_to_remove")
+
+echo "TXZ package removal done. Starting directory and file removal"
+# Read through package removal lines, uninstalling each
+while IFS= read -r line
+do
+  # if line is empty, skip to the next iteration
+  [ -z "$line" ] &amp;&amp; continue
+
+  echo "Deleting $line"
+  rm -rf "$line"
+done < <(printf '%s\n' "$dirs_files_to_remove")
+
+echo "Directory and file removal done"
+
 
 echo ""
 echo "+=============================================================================="
-echo "| Deleting &workingdir;"
-echo "| Deleting &usbcfgdir;"
+echo "| &name; has been uninstalled."
 echo "+=============================================================================="
-
-# Delete the USB plugin folder storing cached files
-rm -rf &usbcfgdir;
-
-# Remove plugin.
-rm -rf &workingdir;
-
 echo ""
-echo "-----------------------------------------------------------"
-echo " &name; has been uninstalled."
-echo "-----------------------------------------------------------"
-echo ""
-
 </INLINE>
 </FILE>
 
