@@ -33,7 +33,7 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     # Define the additional flags we want to add into the SNMP daemon startup
     # Spaces at beginning and end of string to separate from other flags
     # 1=a=alert, 2=c=crit, 3=e=err, 4=w=warn, 5=n=notice, 6=i=info, 7=d=debug
-    new_flags=" -Lf i /var/log/snmp/snmp.log "
+    new_flags=" -Lf i /var/log/snmpd.log "
 
     # Get existing OPTIONS from file, keeping only what's in double quotes
     # https://stackoverflow.com/questions/35636323/extracting-a-string-between-two-quotes-in-bash
@@ -51,9 +51,6 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     else
         echo "SNMP logging flag already present, skipping modification"
     fi
-
-    echo "Creating log directory /var/log/snmp/ if it doesn't already exist"
-    mkdir -p /var/log/snmp/
 
     echo "Restart SNMP daemon now that we've adjusted how it starts up"
     # Make sure error logging is going to STDOUT so it prints in install logs
