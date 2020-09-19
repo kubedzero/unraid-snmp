@@ -61,6 +61,7 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     # Wait for daemon startup to complete by watching for PID file
     # Send error output of "No such file or directory" to /dev/null
     count=0
+    sleep 2
     while [[ -z "$(cat /var/run/snmpd 2> /dev/null)" ]]; do
         printf "."
         sleep 1
