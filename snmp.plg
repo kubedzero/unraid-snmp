@@ -27,7 +27,7 @@
 <!ENTITY perlpkgmd5  "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg   "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd "bd06aa8b36e2b79599a713376c1cc885">
+<!ENTITY pluginpkgmd5 "bd06aa8b36e2b79599a713376c1cc885">
 ]>
 
 <PLUGIN  name="&name;"
