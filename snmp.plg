@@ -187,37 +187,14 @@ echo "+=========================================================================
 echo "| Uninstalling packages, removing directories and files"
 echo "+=============================================================================="
 
-# Define packages to remove in a multi-line string in inverse order of installation
-# NOTE: Skipping package removal of prereqs in Nerd Pack in case other plugins depend on them
-pkgs_to_remove="
-&pluginpkg;
-&snmppkg;
-&libnlpkg;
-"
 
 # Define directories and files to remove in a multi-line string
 dirs_files_to_remove="
-&usbcfgdir;
-&workingdir;
 /etc/rc.d/rc.snmpd*
 /etc/snmp/
 /var/lib/net-snmp/
 /var/log/snmpd.log
 "
-
-echo "Starting TXZ package removal"
-# Read through package removal lines, uninstalling each
-while IFS= read -r line
-do
-  # if line is empty, skip to the next iteration
-  [ -z "$line" ] &amp;&amp; continue
-
-  # remove the directory path and extension, leaving just the package name
-  pkg_name="$(basename $line .txz)"
-
-  # perform the package removal
-  removepkg "$pkg_name"
-done < <(printf '%s\n' "$pkgs_to_remove")
 
 echo "TXZ package removal done. Starting directory and file removal"
 # Read through package removal lines, uninstalling each
