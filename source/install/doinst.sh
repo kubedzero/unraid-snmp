@@ -30,9 +30,7 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     bash /etc/rc.d/rc.snmpd stop
 
     echo "Replace default snmpd.conf with our own, backing up the original"
-    # NOTE: Use cp, not mv. Plugin 2020.04.01 and earlier use the .conf
-    # under /usr/local and updating will fail if SNMP can't start.
-    cp --backup /usr/local/emhttp/plugins/snmp/snmpd.conf /etc/snmp/snmpd.conf
+    mv --backup /usr/local/emhttp/plugins/snmp/snmpd.conf /etc/snmp/snmpd.conf
 
     # Define the additional flags we want to add into the SNMP daemon startup
     # Spaces at end of string to separate from other flags

@@ -8,10 +8,12 @@
 <!ENTITY pluginver     "2020.09.19">
 <!ENTITY minosver      "6.7.0">
 
+
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
 <!ENTITY pluginurl     "&githuburl;/snmp.plg">
 <!ENTITY pkgurl        "&githuburl;/packages">
 <!ENTITY supporturl    "https://forums.unraid.net/topic/39339-plug-in-snmp">
+
 
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
 <!ENTITY usbcfgdir     "/boot/config/plugins/&name;">
@@ -26,7 +28,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "810b5247740f0cc9757a7b7826abbb83">
+<!ENTITY pluginpkgmd5  "27376fddae68844abb5316df00e7bc3f">
 ]>
 
 <PLUGIN  name="&name;"
