@@ -3,9 +3,9 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name          "snmp">
 <!ENTITY author        "kubedzero">
-<!ENTITY gitbranch     "testupgrade">
+<!ENTITY gitbranch     "master">
 
-<!ENTITY pluginver     "2020.09.19">
+<!ENTITY pluginver     "2020.04.01">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
