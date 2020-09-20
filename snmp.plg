@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "testupgrade">
 
-<!ENTITY pluginver     "2020.04.01">
+<!ENTITY pluginver     "2020.09.20e">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -14,7 +14,7 @@
 <!ENTITY supporturl    "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
-<!ENTITY usbcfgdir     "/boot/config/plugins/&name;">
+<!ENTITY usbcfgdir     "/boot/config/plugins/&name;/">
 
 <!ENTITY snmppkg       "net-snmp-5.9-x86_64-1.txz">
 <!ENTITY snmppkgmd5    "b4f6f3dfef81d1f58171012800b8ffc6">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "810b5247740f0cc9757a7b7826abbb83">
+<!ENTITY pluginpkgmd5  "5b8d1827657b1590a3afe298ed43bf68">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,13 @@
 
 <CHANGES>
 ##SNMP
+
+###2020.09.20
+- Bugfix: SMB and NFS permission denied errors after plugin install
+ - Unused scripts were present in `unraid-snmp-2020.09.19-x86_64-1.txz` and somehow interrupted server access
+ - Resolved by rebuilding the `.txz` to contain only used files
+- Updated `slack-desc` formatting
+- PLG tweak: moved forward slash into XML variable for `usbcfgdir`
 
 ###2020.09.19
 - Migrate SNMP plugin to .txz style install 
@@ -112,25 +119,25 @@
 
 
 <!-- Download, cache and install dependent perl package shared with Nerd Pack -->
-<FILE Name="&usbcfgdir;/&perlpkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&perlpkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&perlpkg;</URL>
 <MD5>&perlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install dependent libnl package -->
-<FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&libnlpkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install the net-snmp package -->
-<FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&snmppkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install the Unraid Plugin package -->
-<FILE Name="&usbcfgdir;/&pluginpkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&pluginpkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&pluginpkg;</URL>
 <MD5>&pluginpkgmd5;</MD5>
 </FILE>
