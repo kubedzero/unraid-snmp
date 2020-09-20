@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.19g">
+<!ENTITY pluginver     "2020.09.19h">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY pluginurl     "https://github.com/&author;/unraid-snmp/raw/&gitbranch;/snmp.plg">
@@ -27,7 +27,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "e715c44200167e92544df7efe6ad7910">
+<!ENTITY pluginpkgmd5  "6bd6c7e3ee6de4fa29523e872220820f">
 ]>
 
 <PLUGIN  name="&name;"
@@ -49,14 +49,17 @@
 - Perl 5.32.0 declared as dependency instead of separate install. 
  - Plugin maintainer should keep the version in sync with Nerd Pack
 - Refactored `share_free_space.sh` for added clarity
-- Refactored `drive_temps.sh` 
- - Caching present for rapid SNMP calls and large arrays
- - Avoids disk spinup, preferring to skip temperature for that disk
-- Added `disk_free_space.sh` to print free KB in /boot or /mnt/disk* or /mnt/cache
+- Refactored `drive_temps.sh`
+ - Changed name to `disk_temps.sh`
+ - Five minute TTL cached results for rapid SNMP calls and large arrays
+ - Avoids disk spinup, preferring to report standby "temperature" of -2
+ - If an error is encountered during parsing, report a "temperature" of -1
+ - Script originally output nothing if no cached results present. Now it reports whatever results were collected in 1000ms
+- Added `disk_free_space.sh` to print free KB in /boot, /mnt/disk*, /mnt/cache
  - Exposed in SNMP as `diskfree`
 - Added `cpu_mhz.sh` at request of forum user Max to output CPU overall MHz 
  - Exposed in SNMP as `cpumhz`
- - Tested only for an Intel CPU virtualized under ESXi
+ - Tested with an Intel CPU virtualized under ESXi
 - Install logging more clearly states usage of single and double quotes in sample calls
 
 
