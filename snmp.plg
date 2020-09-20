@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.20b">
+<!ENTITY pluginver     "2020.09.20c">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "d3a43bfa39b13db07dcabfcbf00ee25c">
+<!ENTITY pluginpkgmd5  "4c74efad3e3bc5c0ecb398143a287c54">
 ]>
 
 <PLUGIN  name="&name;"
