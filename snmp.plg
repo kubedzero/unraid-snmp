@@ -1,53 +1,66 @@
 <?xml version='1.0' standalone='yes'?>
 
 <!DOCTYPE PLUGIN [
-<!ENTITY name        "snmp">
-<!ENTITY author      "kubedzero">
+<!ENTITY name          "snmp">
+<!ENTITY author        "kubedzero">
+<!ENTITY gitbranch     "master">
 
-<!ENTITY pluginVer   "2020.04.01">
-<!ENTITY snmpVer     "5.8">
-<!ENTITY minOSVer    "6.7.0">
+<!ENTITY pluginver     "2020.09.19">
+<!ENTITY minosver      "6.7.0">
 
-<!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/master/snmp.plg">
-<!ENTITY rawGitURL   "https://raw.githubusercontent.com/&author;/unraid-snmp/master">
-<!ENTITY supportURL  "https://forums.unraid.net/topic/39339-plug-in-snmp">
+<!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
+<!ENTITY pluginurl     "&githuburl;/snmp.plg">
+<!ENTITY pkgurl        "&githuburl;/packages">
+<!ENTITY supporturl    "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
-<!-- Defines the working directory where README, conf, other files will be created -->
-<!ENTITY workingdir  "/usr/local/emhttp/plugins/&name;">
-<!-- Defines the persistent (USB) directory where downloaded files are cached -->
-<!ENTITY usbcfgdir   "/boot/config/plugins/&name;">
-<!ENTITY pkghost     "&rawGitURL;/packages">
+<!-- Defines the persistent (USB) directory where downloaded packages are cached -->
+<!ENTITY usbcfgdir     "/boot/config/plugins/&name;">
 
-<!ENTITY snmppkg     "net-snmp-&snmpVer;-x86_64-5.txz">
-<!ENTITY snmppkgmd5  "3ed1f1794ca434c3e3dcb56fa0eac51e">
+<!ENTITY snmppkg       "net-snmp-5.9-x86_64-1.txz">
+<!ENTITY snmppkgmd5    "b4f6f3dfef81d1f58171012800b8ffc6">
 
-<!ENTITY libnlpkg    "libnl-1.1.4-x86_64-1.txz">
-<!ENTITY libnlpkgmd5 "435837a5bf0401a937d6ec93e458333b">
+<!ENTITY libnlpkg      "libnl-1.1.4-x86_64-3.txz">
+<!ENTITY libnlpkgmd5   "82c9374aaa9c7f4efbde8041f87d6053">
 
-<!ENTITY iconfile    "snmp.png">
-<!ENTITY iconfilemd5 "4e527e3b03b278774f8044ca148d7e28">
+<!ENTITY perlpkg       "perl-5.32.0-x86_64-1.txz">
+<!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
-<!ENTITY tempsfile   "drive_temps.sh">
-<!ENTITY tempsmd5    "71a809c1e34dfcc99d2f375c1ca89aa5">
-
-<!ENTITY sharefile   "share_free_space.sh">
-<!ENTITY sharemd5    "fc3632854f81070ade8c363e6aba2862">
-
-<!ENTITY community   "public">
-<!ENTITY location    "Here">
-<!ENTITY contact     "root@tower">
+<!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
+<!ENTITY pluginpkgmd5  "810b5247740f0cc9757a7b7826abbb83">
 ]>
 
 <PLUGIN  name="&name;"
          author="&author;"
-         version="&pluginVer;"
-         pluginURL="&pluginURL;"
-         support="&supportURL;"
-         min="&minOSVer;"
+         version="&pluginver;"
+         pluginURL="&pluginurl;"
+         support="&supporturl;"
+         min="&minosver;"
          >
 
 <CHANGES>
-**SNMP**
+##SNMP
+
+###2020.09.19
+- Migrate SNMP plugin to .txz style install 
+- Optimized plugin removal for more complete cleanup
+- Updated net-snmp from 5.8-5 to 5.9
+- Updated libnl from 1.1.4 to 1.1.4-3
+- Perl 5.32.0 declared as dependency instead of separate install. 
+ - Plugin maintainer should keep the version in sync with Nerd Pack to avoid overwriting with an older version
+- Install logging more clearly states usage of single and double quotes in sample calls
+- Refactored `share_free_space.sh` for added clarity. 
+ - Preexisting behavior: Outputs in bytes
+- Refactored `drive_temps.sh`
+ - Changed name to `disk_temps.sh`
+ - Preexisting behavior: Five minute TTL cached results for rapid SNMP calls and large arrays
+ - New behavior: Avoids disk spinup, preferring to report standby "temperature" of -2
+ - New behavior: If an error is encountered during parsing, report a "temperature" of -1
+ - New behavior: Script originally output nothing if no cached results present. Now it reports whatever results were collected in the first 1000ms
+- Added `disk_free_space.sh` to print free bytes in /boot, /mnt/disk*, /mnt/cache
+ - Exposed in SNMP as `diskfree`
+- Added `cpu_mhz.sh` at request of forum user Max to output CPU speed in MHz 
+ - Exposed in SNMP as `cpumhz`
+ - Tested with an Intel CPU virtualized under ESXi
 
 ###2020.04.01
 - Cache downloaded files on USB to support offline installation
@@ -98,237 +111,155 @@
 </CHANGES>
 
 
-<!-- Create plugin README.md file used in the Plugin Web UI-->
-<FILE Name="&workingdir;/README.md">
-<INLINE>
-**SNMP**
-
-Installs and configures SNMP, the Simple Network Management Protocol. SNMP can be used to expose server information to
-monitoring tools like Observium.
-</INLINE>
-</FILE>
-
-<!-- Check that Perl is installed -->
-<FILE Run="/bin/bash">
-<INLINE>
-# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# exit script early if we encounter an error
-set -e
-
-perl_path=$(which perl 2>/dev/null)
-if [ ! -x "$perl_path" ] ; then
-  echo "This plugin requires perl. Installation is recommended via NerdPack:"
-  echo "http://lime-technology.com/forum/index.php?topic=37541.0"
-  echo ""
-  echo "Exiting"
-  echo ""
-  echo ""
-  exit 1
-fi
-</INLINE>
+<!-- Download, cache and install dependent perl package shared with Nerd Pack -->
+<FILE Name="&usbcfgdir;/&perlpkg;" Run="upgradepkg --install-new">
+<URL>&pkgurl;/&perlpkg;</URL>
+<MD5>&perlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install dependent libnl package -->
 <FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
-<URL>&pkghost;/&libnlpkg;</URL>
+<URL>&pkgurl;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
-<!-- Download, cache and install the SNMP package -->
+<!-- Download, cache and install the net-snmp package -->
 <FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
-<URL>&pkghost;/&snmppkg;</URL>
+<URL>&pkgurl;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
-<!-- Download and cache the plugin icon -->
-<FILE Name="&usbcfgdir;/&iconfile;">
-<URL>&rawGitURL;/&iconfile;</URL>
-<MD5>&iconfilemd5;</MD5>
+<!-- Download, cache and install the Unraid Plugin package -->
+<FILE Name="&usbcfgdir;/&pluginpkg;" Run="upgradepkg --install-new">
+<URL>&pkgurl;/&pluginpkg;</URL>
+<MD5>&pluginpkgmd5;</MD5>
 </FILE>
 
-<!-- Download and cache the drive temperature script -->
-<FILE Name="&usbcfgdir;/&tempsfile;">
-<URL>&rawGitURL;/&tempsfile;</URL>
-<MD5>&tempsmd5;</MD5>
-</FILE>
-
-<!-- Download and cache the free space script -->
-<FILE Name="&usbcfgdir;/&sharefile;">
-<URL>&rawGitURL;/&sharefile;</URL>
-<MD5>&sharemd5;</MD5>
-</FILE>
-
-<!-- Copy into working directory and set executable permissions -->
+<!-- Test SNMP functionality -->
 <FILE Run="/bin/bash">
 <INLINE>
+
+# NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
+
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 # exit script early if we encounter an error
 set -e
-
-echo ""
-echo "+=============================================================================="
-echo "| Copy files from &usbcfgdir;"
-echo "| into &workingdir; and set permissions"
-echo "+=============================================================================="
-
-chmod o+rx &workingdir;
-
-cp &usbcfgdir;/&iconfile; &workingdir;/&iconfile;
-cp &usbcfgdir;/&tempsfile; &workingdir;/&tempsfile;
-cp &usbcfgdir;/&sharefile; &workingdir;/&sharefile;
-
-chmod a+x &workingdir;/&tempsfile;
-chmod a+x &workingdir;/&sharefile;
-
-echo "Copy complete!"
-exit 0
-</INLINE>
-</FILE>
-
-<!-- Create the config file in the working directory -->
-<FILE Name="&workingdir;/snmpd.conf">
-<INLINE>
-rocommunity &community;
-syslocation &location;
-syscontact &contact;
-disk /mnt/disk1
-disk /mnt/disk2
-disk /mnt/disk3
-disk /mnt/disk4
-disk /mnt/disk5
-disk /mnt/disk6
-disk /mnt/disk7
-disk /mnt/disk8
-disk /mnt/disk9
-disk /mnt/disk10
-disk /mnt/disk11
-disk /mnt/disk12
-disk /mnt/disk13
-disk /mnt/disk14
-disk /mnt/disk15
-disk /mnt/disk16
-disk /mnt/disk17
-disk /mnt/disk18
-disk /mnt/disk19
-disk /mnt/disk20
-disk /mnt/disk21
-disk /mnt/disk22
-disk /mnt/disk23
-disk /mnt/disk24
-disk /mnt/disk25
-disk /mnt/disk26
-disk /mnt/disk27
-disk /mnt/disk28
-disk /mnt/cache
-
-extend disktemp &workingdir;/&tempsfile;
-extend sharefree &workingdir;/&sharefile;
-</INLINE>
-</FILE>
-
-<!-- Update rc.d to use our config file, restart snmpd, and test it -->
-<FILE Run="/bin/bash">
-<INLINE>
-# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# exit script early if we encounter an error
-set -e
-
-echo ""
-echo "+=============================================================================="
-echo "| Updating /etc/rc.d/rc.snmpd to use our config file, and to reduce logging"
-echo "+=============================================================================="
-
-bash /etc/rc.d/rc.snmpd stop
-
-sed -i.old -e 's#/etc/snmp/snmpd.conf#&workingdir;/snmpd.conf#g' /etc/rc.d/rc.snmpd
-sed -i.old -e 's#OPTIONS="#OPTIONS="-LF w /var/log/snmpd.log #g' /etc/rc.d/rc.snmpd
-
-bash /etc/rc.d/rc.snmpd start
 
 echo ""
 echo "+=============================================================================="
 echo "| Testing SNMP by listing mounts, /boot should be present"
 echo "+=============================================================================="
+echo ""
 
-RESULTS=$(snmpwalk -v 1 localhost -c public hrFSMountPoint 2>&amp;1)
-if [[ "$RESULTS" =~ "/boot" ]]
+printf "snmpwalk -v 2c localhost -c public hrFSMountPoint\n"
+results=$(snmpwalk -v 2c localhost -c public hrFSMountPoint 2>&amp;1) || printf "snmpwalk failure"
+if [[ "$results" =~ "/boot" ]]
 then
-  echo "Looks like snmpd is working... Output:"
-  echo "$RESULTS"
+  echo "SNMP appears to be working. Output:"
+  echo "$results"
 else
-  echo "Couldn't find /boot mount point in SNMP output. Output:"
-  echo "$RESULTS"
-  echo ""
-  echo ""
+  echo "Couldn't find /boot mount point. SNMP output:"
+  echo "$results"
   exit 1
 fi
 
 echo ""
-echo "Here are how drive temperatures look:"
-echo snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
-snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."disktemp"'
+echo "+=============================================================================="
+echo "| Other SNMP Examples"
+echo "+=============================================================================="
+echo ""
+
+printf "Here are how sharefree lines look:\n"
+printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
+snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
+
+printf "\nHere are how all custom extensions look:\n"
+printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
+snmpwalk -v 2c -c public localhost nsExtendOutLine
+
 
 echo ""
-echo "Here is how share free space looks:"
-echo snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
-snmpwalk -v 2c localhost -c public 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
-
-echo ""
+echo "+=============================================================================="
+echo "| &name; version &pluginver; has been installed."
+echo "+=============================================================================="
 echo ""
 
 exit 0
-</INLINE>
-</FILE>
-
-<!-- The 'post-install' script -->
-<FILE Run="/bin/bash">
-<INLINE>
-echo ""
-echo "-----------------------------------------------------------"
-echo " &name; has been installed."
-echo " Version: &pluginVer;"
-echo "-----------------------------------------------------------"
-echo ""
 </INLINE>
 </FILE>
 
 <!-- The 'remove' script -->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
+
+# NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
+
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 # exit script early if we encounter an error
 set -e
 
 echo ""
 echo "+=============================================================================="
-echo "| Uninstalling packages"
+echo "| Uninstalling packages, removing directories and files"
 echo "+=============================================================================="
+echo ""
 
-# Uninstall the package
-removepkg $(basename &snmppkg; .txz) | grep -v -e '  --&gt; Deleting'
+# Shut down the SNMP daemon. It emits its own STDOUT lines when done
+/bin/bash /etc/rc.d/rc.snmpd stop
 
-# Uninstall prerequisites in the reverse order of their installation
-# NOTE: Skipping package removal of prereqs in case other plugins depend on them
+# Define packages to remove in a multi-line string in inverse order of installation
+# NOTE: Skipping package removal of prereqs in Nerd Pack in case other plugins depend on them
+pkgs_to_remove="
+&pluginpkg;
+&snmppkg;
+&libnlpkg;
+"
 
+# Define directories and files to remove in a multi-line string
+dirs_files_to_remove="
+&usbcfgdir;
+/usr/local/emhttp/plugins/snmp/
+/etc/rc.d/rc.snmpd*
+/etc/snmp/
+/var/lib/net-snmp/
+/var/log/snmpd.log
+"
+
+echo "Starting TXZ package removal"
+# Read through package removal lines, uninstalling each
+while IFS= read -r line
+do
+  # if line is empty, skip to the next iteration
+  [ -z "$line" ] &amp;&amp; continue
+
+  # remove the directory path and extension, leaving just the package name
+  pkg_name="$(basename $line .txz)"
+
+  # perform the package removal
+  removepkg "$pkg_name"
+done &lt; &lt;(printf '%s\n' "$pkgs_to_remove")
+
+printf "\nTXZ package removal done. Starting directory and file removal\n"
+
+# Read through package removal lines, uninstalling each
+while IFS= read -r line
+do
+  # if line is empty, skip to the next iteration
+  [ -z "$line" ] &amp;&amp; continue
+
+  echo "Deleting $line"
+  rm -rf "$line"
+done &lt; &lt;(printf '%s\n' "$dirs_files_to_remove")
+
+printf "\nDirectory and file removal done"
 
 echo ""
 echo "+=============================================================================="
-echo "| Deleting &workingdir;"
-echo "| Deleting &usbcfgdir;"
+echo "| &name; has been uninstalled."
 echo "+=============================================================================="
-
-# Delete the USB plugin folder storing cached files
-rm -rf &usbcfgdir;
-
-# Remove plugin.
-rm -rf &workingdir;
-
-echo ""
-echo "-----------------------------------------------------------"
-echo " &name; has been uninstalled."
-echo "-----------------------------------------------------------"
 echo ""
 
+exit 0
 </INLINE>
 </FILE>
 
