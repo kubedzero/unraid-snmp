@@ -11,9 +11,9 @@ unraid-snmp:
 unraid-snmp: unraid-snmp assists with installing a custom extension of net-snmp
 unraid-snmp: and configuring it for use on Unraid. 
 unraid-snmp:
-unraid-snmp: bash /etc/rc.d/rc.snmpd stop   # stop daemon
-unraid-snmp: nano /etc/snmp/snmpd.conf      # edit config
-unraid-snmp: bash /etc/rc.d/rc.snmpd start  # start daemon
-unraid-snmp: tail -f /var/log/snmpd.log     # tail logs
+unraid-snmp: nano /etc/snmp/snmpd.conf        # edit config
+unraid-snmp: bash /etc/rc.d/rc.snmpd restart  # stop and start daemon
+unraid-snmp: tail -f /var/log/snmpd.log       # tail logs
 unraid-snmp:
 unraid-snmp: https://github.com/kubedzero/unraid-snmp
+unraid-snmp:
