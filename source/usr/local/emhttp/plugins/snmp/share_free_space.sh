@@ -24,7 +24,7 @@ then
     exit 1
 fi
 
-# Iterate through each name/size element pair
+# Iterate through each name/size pair
 # https://github.com/koalaman/shellcheck/wiki/SC2004 no need for $
 for (( i=1; i<=share_name_count; i++ ));
 do

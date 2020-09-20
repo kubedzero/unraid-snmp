@@ -26,7 +26,9 @@ mkdir -p "$working_dir"
 # Check if cache file has been modified in the last five minutes
 if [[ -n $(find $working_dir -name $cache_file_name -mmin -5) ]]
 then
-    # Output the cached
+    # Output to the log file that we used cached values
+    echo "Valid cached values served at $(date)" >> "$cache_log_full_path"
+    # Output the cached information
     cat "$cache_file_full_path"
     exit 0
 fi
@@ -38,58 +40,62 @@ function update_cache_file {
     # -n ensures we fail immediately if we can't immediately lock
     if ! flock -n 200
     then
-        echo "PID $$ couldn't acquire lock on $cache_lock_full_path"
+        echo "PID $$ couldn't acquire lock on $cache_lock_full_path at $(date)"
         exit 2
     else
-        echo "PID $$ acquired the lock. Begin updating $cache_file_name"
+        echo "PID $$ acquired the lock at $(date). Begin updating $cache_file_name"
     fi
 
     # Call mdcmd to get disk info.
     mdcmd_data=$(mdcmd status)
     # Find instances of ID and Name with something after the = character
-    dev_id_data=$(grep 'rdevId.*=.' <<< "$mdcmd_data")
-    dev_name_data=$(grep 'rdevName.*=.' <<< $mdcmd_data)
+    # ID is the model/serial such as WDC_WD100EMAZ-00WJTA0_1EAAA8SZ
+    # Name is the Linux address, the "sdc" part of /dev/sdc
+    dev_model_data=$(grep 'rdevId.*=.' <<< "$mdcmd_data")
+    dev_address_data=$(grep 'rdevName.*=.' <<< "$mdcmd_data")
 
-    # Store the line count of dev IDs
-    dev_id_count=$(echo "$dev_id_data" | wc -l)
+    # Store the line count of models
+    dev_model_count=$(echo "$dev_model_data" | wc -l)
 
     # If counts differ, exit early
-    if [ "$dev_id_count" -ne "$(echo "$dev_name_data" | wc -l)" ]
+    if [ "$dev_model_count" -ne "$(echo "$dev_address_data" | wc -l)" ]
     then
-        echo "Exiting: ID count [$dev_id_count] differs from Name count"
+        echo "Exiting: Model count [$dev_model_count] differs from Address count"
         exit 1
     fi
 
     # Remove the cache file before we start writing to it
     rm -f "$cache_file_full_path"
 
-    # Iterate through each id/name element pair
+    # Iterate through each model/address pair
     # https://github.com/koalaman/shellcheck/wiki/SC2004 no need for $
-    for (( i=1; i<=dev_id_count; i++ ));
+    for (( i=1; i<=dev_model_count; i++ ));
     do
 
-        dev_id_line=$(sed -n "${i}"p <<< "$dev_id_data")
-        dev_name_line=$(sed -n "${i}"p <<< "$dev_name_data")
+        # Get a particular line from each multi-line string
+        model_line=$(sed -n "${i}"p <<< "$dev_model_data")
+        address_line=$(sed -n "${i}"p <<< "$dev_address_data")
 
         # Check that each line has the same mdcmd group number
-        id_group_num=$(echo "$dev_id_line" | sed 's#.*\.\(.*\)=.*#\1#')
-        name_group_num=$(echo "$dev_name_line" | sed 's#.*\.\(.*\)=.*#\1#')
+        model_group_num=$(echo "$model_line" | sed 's#.*\.\(.*\)=.*#\1#')
+        address_group_num=$(echo "$address_line" | sed 's#.*\.\(.*\)=.*#\1#')
 
-        if [[ "$id_group_num" != "$name_group_num" ]]
+        if [[ "$model_group_num" != "$address_group_num" ]]
         then
-            echo "Exiting: mdcmd parsing had mismatched group numbers $id_group_num and $name_group_num"
+            echo "Exiting: mdcmd parsing had mismatched group numbers $model_group_num and $address_group_num"
             exit 1
         fi
 
-        # Format the ID into /dev/sdc, /dev/sdN, etc
-        dev_path=$(echo "$dev_id_line" | sed 's#.*=#/dev/#')
+        # Format the address into /dev/sdc, /dev/sdN, etc
+        dev_path=$(echo "$address_line" | sed 's#.*=#/dev/#')
         # Format the name by removing the mdcmd group info and equal sign
-        disk_name=$(echo "$dev_name_line" | sed 's/.*=//')
+        disk_name=$(echo "$model_line" | sed 's/.*=//')
 
         # Call smartctl and attempt to get the attributes via -A
         # Call with --nocheck standby to exit early if power mode is STANDBY
+        # Exit flag is 2 when in standby, so provide an OR true to offer an exit 0
         # NOTE: WD disks need to be spun up for attributes to show
-        smartctl_output=$(smartctl --nocheck standby -A "$dev_path")
+        smartctl_output=$(smartctl --nocheck standby -A "$dev_path") || true
 
         # Check if the disk is reported to be in standby mode
         if [[ $smartctl_output == *"Device is in STANDBY mode"* ]]
@@ -112,6 +118,9 @@ function update_cache_file {
                     echo "Disk $dev_path $disk_name temp is $temperature C"
                     # Append the formatted disk name and real temperature to the cache file
                     echo "$disk_name: $temperature" >> $cache_file_full_path
+                    sleep 1
+                    # Continue to the next loop iteration
+                    continue
                 else
                     echo "Encountered a non-float, non-integer temperature, reporting temperature as -1"
                 fi
@@ -121,7 +130,7 @@ function update_cache_file {
         fi
 
     done
-    echo "PID $$ is finished with the lock, $cache_file_full_path is updated"
+    echo "PID $$ is finished with the lock at $(date), $cache_file_full_path is updated"
 }
 
 # Call the function defined above.
@@ -134,6 +143,21 @@ function update_cache_file {
 # https://tobru.ch/follow-up-bash-script-locking-with-flock/
 update_cache_file </dev/null >>$cache_log_full_path 2>&1 200>$cache_lock_full_path &
 
-# disconnect the forked process from this script's PID tree and exit
+# Disconnect the forked process from this script's PID tree
 disown
+
+# Wait 1000ms for a chance at disk temps being partially for fully listed
+sleep 1
+
+# Check if cache file has been modified in the last five minutes
+if [[ -n $(find $working_dir -name $cache_file_name -mmin -5) ]]
+then
+    # Output whatever cached info is there, which is better than nothing
+    # This is the same behavior as calling SNMP rapidly after refresh
+    # which could lead to partial results
+    cat "$cache_file_full_path"
+    exit 0
+fi
+
+
 exit 0
