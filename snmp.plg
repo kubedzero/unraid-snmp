@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.20c">
+<!ENTITY pluginver     "2020.09.20d">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -174,11 +174,11 @@ echo ""
 
 printf "Here are how sharefree lines look:\n"
 printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
-# snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
+snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
 printf "\nHere are how all custom extensions look:\n"
 printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
-# snmpwalk -v 2c -c public localhost nsExtendOutLine
+snmpwalk -v 2c -c public localhost nsExtendOutLine
 
 
 echo ""
