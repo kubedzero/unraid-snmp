@@ -8,7 +8,7 @@
 <!ENTITY snmpVer     "5.8">
 <!ENTITY minOSVer    "6.7.0">
 
-<!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/master/snmp.plg">
+<!ENTITY pluginURL   "https://github.com/&author;/unraid-snmp/raw/testupgrade/snmp.plg">
 <!ENTITY rawGitURL   "https://raw.githubusercontent.com/&author;/unraid-snmp/master">
 <!ENTITY supportURL  "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
