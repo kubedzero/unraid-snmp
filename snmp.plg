@@ -41,7 +41,11 @@
 ##SNMP
 
 ###2020.09.20
-- Bugfix of SMB and NFS permission denied errors after install
+- Bugfix: SMB and NFS permission denied errors after plugin install
+ - Unused scripts were present in `unraid-snmp-2020.09.19-x86_64-1.txz` and somehow interrupted server access
+ - Resolved by rebuilding the `.txz` to contain only used files
+- Updated `slack-desc` formatting
+- PLG tweak: moved forward slash into XML variable for `usbcfgdir`
 
 ###2020.09.19
 - Migrate SNMP plugin to .txz style install 
