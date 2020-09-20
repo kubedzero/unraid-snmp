@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name          "snmp">
 <!ENTITY author        "kubedzero">
-<!ENTITY gitbranch     "master">
+<!ENTITY gitbranch     "testupgrade">
 
 <!ENTITY pluginver     "2020.04.01">
 <!ENTITY minosver      "6.7.0">
