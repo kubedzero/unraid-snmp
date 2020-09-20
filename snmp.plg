@@ -5,15 +5,14 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.19i">
+<!ENTITY pluginver     "2020.09.19">
 <!ENTITY minosver      "6.7.0">
 
-<!ENTITY pluginurl     "https://github.com/&author;/unraid-snmp/raw/&gitbranch;/snmp.plg">
+<!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
+<!ENTITY pluginurl     "&githuburl;/snmp.plg">
+<!ENTITY pkgurl        "&githuburl;/packages">
 <!ENTITY supporturl    "https://forums.unraid.net/topic/39339-plug-in-snmp">
-<!ENTITY pkgurl        "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;/packages">
 
-<!-- Defines the destination directory where all final files will be stored -->
-<!ENTITY workingdir    "/usr/local/emhttp/plugins/&name;">
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
 <!ENTITY usbcfgdir     "/boot/config/plugins/&name;">
 
@@ -27,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "26eccff37f2fa1572d2ee1c4499352e7">
+<!ENTITY pluginpkgmd5  "27376fddae68844abb5316df00e7bc3f">
 ]>
 
 <PLUGIN  name="&name;"
@@ -219,7 +218,7 @@ pkgs_to_remove="
 # Define directories and files to remove in a multi-line string
 dirs_files_to_remove="
 &usbcfgdir;
-&workingdir;
+/usr/local/emhttp/plugins/snmp/
 /etc/rc.d/rc.snmpd*
 /etc/snmp/
 /var/lib/net-snmp/
