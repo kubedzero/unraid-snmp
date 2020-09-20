@@ -6,13 +6,18 @@
 set -euo pipefail
 
 # Define the input file from which we will read Share name and free KB
-ini_input=/var/local/emhttp/shares.ini
+shares_ini=/var/local/emhttp/shares.ini
+
+# Check that the file exists and is non-empty and exit otherwise
+if ! [[ -f "$shares_ini" ]] || ! [[ -s "$shares_ini" ]]; then
+    exit 1
+fi
 
 # Store Share names and KB free
 # Find names by getting lines with an open bracket "["
-share_names=$(grep '^\[' $ini_input)
+share_names=$(grep '^\[' $shares_ini)
 # Find kilobytes free by getting lines with string "free="
-share_free=$(grep '^free=' $ini_input)
+share_free=$(grep '^free=' $shares_ini)
 
 # Store the line count of share_names
 share_name_count=$(echo "$share_names" | wc -l)
