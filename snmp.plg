@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.19">
+<!ENTITY pluginver     "2020.09.20">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "810b5247740f0cc9757a7b7826abbb83">
+<!ENTITY pluginpkgmd5  "a938dc57dd0ad3aae3d348dfe3d17d2c">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,9 @@
 
 <CHANGES>
 ##SNMP
+
+###2020.09.20
+- Bugfix of SMB and NFS permission denied errors after install
 
 ###2020.09.19
 - Migrate SNMP plugin to .txz style install 
@@ -171,11 +174,11 @@ echo ""
 
 printf "Here are how sharefree lines look:\n"
 printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
-snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
+# snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
 printf "\nHere are how all custom extensions look:\n"
 printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
-snmpwalk -v 2c -c public localhost nsExtendOutLine
+# snmpwalk -v 2c -c public localhost nsExtendOutLine
 
 
 echo ""
