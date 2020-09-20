@@ -14,7 +14,7 @@
 <!ENTITY supporturl    "https://forums.unraid.net/topic/39339-plug-in-snmp">
 
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
-<!ENTITY usbcfgdir     "/boot/config/plugins/&name;">
+<!ENTITY usbcfgdir     "/boot/config/plugins/&name;/">
 
 <!ENTITY snmppkg       "net-snmp-5.9-x86_64-1.txz">
 <!ENTITY snmppkgmd5    "b4f6f3dfef81d1f58171012800b8ffc6">
@@ -115,25 +115,25 @@
 
 
 <!-- Download, cache and install dependent perl package shared with Nerd Pack -->
-<FILE Name="&usbcfgdir;/&perlpkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&perlpkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&perlpkg;</URL>
 <MD5>&perlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install dependent libnl package -->
-<FILE Name="&usbcfgdir;/&libnlpkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&libnlpkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&libnlpkg;</URL>
 <MD5>&libnlpkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install the net-snmp package -->
-<FILE Name="&usbcfgdir;/&snmppkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&snmppkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&snmppkg;</URL>
 <MD5>&snmppkgmd5;</MD5>
 </FILE>
 
 <!-- Download, cache and install the Unraid Plugin package -->
-<FILE Name="&usbcfgdir;/&pluginpkg;" Run="upgradepkg --install-new">
+<FILE Name="&usbcfgdir;&pluginpkg;" Run="upgradepkg --install-new">
 <URL>&pkgurl;/&pluginpkg;</URL>
 <MD5>&pluginpkgmd5;</MD5>
 </FILE>
