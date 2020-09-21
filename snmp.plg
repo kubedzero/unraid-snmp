@@ -43,7 +43,7 @@
 ###2020.09.21
 - Added `mem_info.sh` to print memory values in bytes
  - Exposed in SNMP as `meminfo`
- - Current memory values exported are MemTotal, MemFree, MemAvailable, Active, Inactive, Committed_AS
+ - Current memory values exported are MemTotal, MemFree, MemAvailable, Cached, Active, Inactive, Committed_AS
 
 ###2020.09.20
 - Bugfix: SMB and NFS permission denied errors after plugin install
