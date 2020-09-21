@@ -15,6 +15,7 @@ echo "Set shell script executable permissions"
 chmod a+x cpu_mhz.sh
 chmod a+x disk_free_space.sh
 chmod a+x disk_temps.sh
+chmod a+x mem_info.sh
 chmod a+x share_free_space.sh
 
 echo "Set read only permissions for other files"
