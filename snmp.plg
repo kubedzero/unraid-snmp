@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2020.09.21">
+<!ENTITY pluginver     "2020.09.27">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "5995ef37e0e2a2ca52d752d9a7cf3b9e">
+<!ENTITY pluginpkgmd5  "fbcc617abe9eaeea8cbcb1f10478c751">
 ]>
 
 <PLUGIN  name="&name;"
@@ -40,10 +40,12 @@
 <CHANGES>
 ##SNMP
 
-###2020.09.21
+###2020.09.27
 - Added `mem_info.sh` to print memory values in bytes
  - Exposed in SNMP as `meminfo`
  - Current memory values exported are MemTotal, MemFree, MemAvailable, Cached, Active, Inactive, Committed_AS
+- Added Settings page to disable `--no-check standby` when getting disk temps if Standby issues are encountered
+ - State is stored between reboots in `/boot/config/plugins/snmp/snmp.cfg`
 
 ###2020.09.20
 - Bugfix: SMB and NFS permission denied errors after plugin install

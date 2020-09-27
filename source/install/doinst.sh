@@ -20,6 +20,7 @@ chmod a+x share_free_space.sh
 
 echo "Set read only permissions for other files"
 chmod a+r snmpd.conf
+chmod a+r snmp.page
 chmod a+r snmp.png
 chmod a+r README.md
 
