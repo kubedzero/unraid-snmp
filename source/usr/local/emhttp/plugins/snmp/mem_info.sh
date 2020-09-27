@@ -13,7 +13,7 @@ getValFromMemInfo () {
     mem_value=$(grep "$1" /proc/meminfo)
 
     # Skip outputting if grep pattern did not yield exactly one result
-    if [[ ! "$(echo "$mem_value" | wc -l)" -eq "1" ]]
+    if [[ ! "$(echo $mem_value | wc -l)" -eq "1" ]]
     then
         return
     fi
