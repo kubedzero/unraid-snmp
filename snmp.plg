@@ -44,8 +44,11 @@
 - Added `mem_info.sh` to print memory values in bytes
  - Exposed in SNMP as `meminfo`
  - Current memory values exported are MemTotal, MemFree, MemAvailable, Cached, Active, Inactive, Committed_AS
-- Added Settings page to disable `--no-check standby` when getting disk temps if Standby issues are encountered
+- Added Settings page to disable `--no-check standby` when getting disk temps
+ - Used in Unraid setups where disks are always reported to be in Standby
+ - Used in Unraid setups where disks don't need spinning up to get temperature 
  - State is stored between reboots in `/boot/config/plugins/snmp/snmp.cfg`
+- The script `/usr/local/emhttp/plugins/snmp/disk_temps.sh` reads this config to change behavior
 
 ###2020.09.20
 - Bugfix: SMB and NFS permission denied errors after plugin install
