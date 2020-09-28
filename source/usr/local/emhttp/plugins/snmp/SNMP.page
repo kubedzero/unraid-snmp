@@ -36,9 +36,7 @@ Enable Unsafe Temperature Checking:
   </select>
 
 <!-- Popup help section that can be accessed by clicking on the category name -->
-:unsafe_disk_temp_plug:
 > By default, this is disabled and SNMP only checks the disk temperature if the disk reports itself to be out of STANDBY mode. Some systems' disks always report STANDBY mode, preventing SNMP from ever fetching disk temperature. Enable this setting to use a less safe method of temperature fetching that may wake the disks from STANDBY in some systems.
-:end
 
 <!-- Create a button titled "Default" in the UI -->
 <!-- It calls setDefaults javascript function when clicked and then submits the form after-->
