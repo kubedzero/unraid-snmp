@@ -45,13 +45,12 @@ The key to creating these Slackware packages is to use `makepkg` which is provid
 
 
 
-* Get the source code from macOS onto Unraid with `scp -r ~/GitHub/kubedzero/unraid-snmp/source root@unraid:/tmp/packageSource`
-  * recursively copy all source files to the Unraid server with IP `unraid` 
-  * replace `unraid` with `192.168.1.10` or whatever your server's IP is
+* Get the source code from macOS onto Unraid with `scp -r ~/GitHub/kubedzero/unraid-snmp/source root@unraid.local:/tmp/packageSource`
+  * recursively copy all source files to the Unraid server with IP `unraid.local` 
+  * replace `unraid.local` with `192.168.1.10` or whatever your server's IP is
   * `scp` will automatically create the `packageSource` directory and drop the sub-contents into it. So if there was a file on macOS `~/GitHub/kubedzero/unraid-snmp/source/install/doinst.sh` it would be copied to `/tmp/packageSource/install/doinst.sh`. 
-  * NOTE: If `/tmp/packageSource` already existed before running the command, the `./source` directory is created within. So if there was a file on macOS `~/GitHub/kubedzero/unraid-snmp/source/install/doinst.sh` it would be copied to `/tmp/packageSource/source/install/doinst.sh`. 
-* Copy the `createpackage.sh` script as well: `scp ~/GitHub/kubedzero/unraid-snmp/createpackage.sh root@unraid:/tmp/`
-* Run a remote SSH command on macOS to build the package: `ssh -t root@unraid "cd /tmp/ && bash /tmp/createpackage.sh 2020.09.19 /tmp/packageSource/"`
+* Copy the `createpackage.sh` script as well: `scp ~/GitHub/kubedzero/unraid-snmp/createpackage.sh root@unraid.local:/tmp/`
+* Run a remote SSH command on macOS to build the package: `ssh -t root@unraid.local "cd /tmp/ && bash /tmp/createpackage.sh 2020.09.19 /tmp/packageSource/"`
   * The `-t` command executes everything in the double quotes on the Unraid server
   * The command first establishes a location by moving into the `/tmp/` directory
   * It then calls `bash /tmp/createpackage.sh` because Unraid changed to not allow direct execution, aka just executing `/tmp/createpackage.sh`
@@ -65,7 +64,7 @@ The key to creating these Slackware packages is to use `makepkg` which is provid
   * The `makepkg` command bundles everything in the directory from where it was called into the package, so in preparation, the script moves to the source directory (provided as the second argument)
   * The `makepkg` command is invoked and the package is created (outside the source directory, as required by the tool)
   * The MD5 of the created package is computed and printed for convenience
-* Now we need to copy the compiled package back to macOS, where our Git repository lives. `scp "root@unraid:/tmp/*.txz" ~/GitHub/kubedzero/unraid-snmp/packages`
+* Now we need to copy the compiled package back to macOS, where our Git repository lives. `scp "root@unraid.local:/tmp/*.txz" ~/GitHub/kubedzero/unraid-snmp/packages`
   * This copies any `.txz` file in `/tmp/` so it doesn't have to be updated for version bumps, but `*.txz` can just as easily be replaced with the full name `unraid-snmp-2020.09.19-x86_64-1.txz` if desired
 * Now we need to update the MD5 listed in the `snmp.plg` file for the `unraid-snmp.txz` package we copied over. I do this manually, using the printout from the `createpackage.sh` script. A sample MD5 is `09655c2ee9391e64ff7584b2893b5454`
 * Now update the plugin version in the `snmp.plg` file if it hasn't already been done, commit the code and package changes, and push to GitHub
