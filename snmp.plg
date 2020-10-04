@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "master">
 
-<!ENTITY pluginver     "2020.09.20">
+<!ENTITY pluginver     "2020.10.04">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "5b8d1827657b1590a3afe298ed43bf68">
+<!ENTITY pluginpkgmd5  "849240df53b7853f02b3f12886472cc3">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,16 @@
 
 <CHANGES>
 ##SNMP
+
+###2020.10.04
+- Added `mem_info.sh` to print memory values in bytes
+ - Exposed in SNMP as `meminfo`
+ - Current memory values exported are MemTotal, MemFree, MemAvailable, Cached, Active, Inactive, Committed_AS
+- Added Settings page to disable `--no-check standby` when getting disk temps
+ - Used in Unraid setups where disks are always reported to be in Standby
+ - Used in Unraid setups where disks don't need spinning up to get temperature 
+ - State is stored between reboots in `/boot/config/plugins/snmp/snmp.cfg`
+ - The script `/usr/local/emhttp/plugins/snmp/disk_temps.sh` reads this config to change behavior
 
 ###2020.09.20
 - Bugfix: SMB and NFS permission denied errors after plugin install
