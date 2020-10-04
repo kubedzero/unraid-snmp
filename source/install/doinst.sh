@@ -24,12 +24,13 @@ chmod a+r snmp.page
 chmod a+r snmp.png
 chmod a+r README.md
 
+echo "Checking if /etc/rc.d/rc.snmpd exists before editing"
 # Only run modifications if snmpd startup/shutdown file exists
 # https://linuxize.com/post/bash-check-if-file-exists/
 if [[ -f /etc/rc.d/rc.snmpd ]]; then
 
     echo "Stop SNMP daemon if it is currently running"
-    bash /etc/rc.d/rc.snmpd stop
+    bash /etc/rc.d/rc.snmpd stop 2>&1
 
     echo "Replace default snmpd.conf with our own, backing up the original"
     # NOTE: Use cp, not mv. Plugin 2020.04.01 and earlier use the .conf
