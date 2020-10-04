@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "testupgrade">
 
-<!ENTITY pluginver     "2020.09.20e">
+<!ENTITY pluginver     "2020.09.20">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
