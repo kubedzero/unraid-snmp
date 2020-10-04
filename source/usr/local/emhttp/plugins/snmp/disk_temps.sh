@@ -7,13 +7,15 @@
 set -euo pipefail
 
 # Define the working directory in which files will live
-working_dir=/tmp/plugins/snmp/
+working_dir="/tmp/plugins/snmp/"
 # Define the file that will hold disk temperatures
-cache_file_name=disk_temps.txt
+cache_file_name="disk_temps.txt"
 # Define the lock file that will prevent multiple simultaneous writes
-cache_lock_name=disk_temps.lock
+cache_lock_name="disk_temps.lock"
 # Define the log output for errors
-cache_log_name=disk_temps.log
+cache_log_name="disk_temps.log"
+# Define the file that the SNMP Settings page updates
+config_file="/boot/config/plugins/snmp/snmp.cfg"
 
 # Update file name variables with full paths
 cache_file_full_path="$working_dir$cache_file_name"
@@ -64,6 +66,26 @@ function update_cache_file {
         exit 1
     fi
 
+    # source will load the lines of the .cfg as variables
+    # Exit flag is 1 when file missing, so provide an OR true to offer an exit 0
+    # 2> /dev/null hides STDERR and sends it to /dev/null instead
+    source "$config_file" 2> /dev/null || true
+
+    # Check if the variable sourced from the .cfg is equal to 1/enabled
+    # Provide default value if variable is unset, to avoid breaking `set`
+    # https://stackoverflow.com/questions/2013547/assigning-default-values-to-shell-variables-with-a-single-command-in-bash
+    if [[ "${UNSAFETEMP:-}" -eq "1" ]]
+    then
+        echo "Disk temp retrieval may wake disks from STANDBY"
+        # Set the command-modifying var we'll use later to an empty string
+        # NOTE: WD disks need to be spun up for attributes to show
+        # NOTE: Disks may be forced out of STANDBY to report attributes
+        standby_check=""
+    else
+        # Call smartctl with --nocheck standby to exit early if power mode is STANDBY
+        standby_check="--nocheck standby"
+    fi
+
     # Remove the cache file before we start writing to it
     rm -f "$cache_file_full_path"
 
@@ -92,10 +114,10 @@ function update_cache_file {
         disk_name=$(echo "$model_line" | sed 's/.*=//')
 
         # Call smartctl and attempt to get the attributes via -A
-        # Call with --nocheck standby to exit early if power mode is STANDBY
         # Exit flag is 2 when in standby, so provide an OR true to offer an exit 0
-        # NOTE: WD disks need to be spun up for attributes to show
-        smartctl_output=$(smartctl --nocheck standby -A "$dev_path") || true
+        # standby_check variable should either be an empty string (no modification)
+        # or standby_check might be --nocheck standby to prevent disk spinup
+        smartctl_output=$(smartctl $standby_check -A "$dev_path") || true
 
         # Check if the disk is reported to be in standby mode
         if [[ $smartctl_output == *"Device is in STANDBY mode"* ]]
