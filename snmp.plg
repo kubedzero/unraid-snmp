@@ -3,9 +3,9 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name          "snmp">
 <!ENTITY author        "kubedzero">
-<!ENTITY gitbranch     "testupgrade">
+<!ENTITY gitbranch     "main">
 
-<!ENTITY pluginver     "2020.10.04">
+<!ENTITY pluginver     "2020.11.20">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -39,6 +39,11 @@
 
 <CHANGES>
 ##SNMP
+
+###2020.11.20
+- Repository branch references changed from "master" to "main"
+ - https://github.com/github/renaming
+- Code and functionally identical to version 2020.10.04
 
 ###2020.10.04
 - Added `mem_info.sh` to print memory values in bytes
