@@ -5,11 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<<<<<<< Updated upstream
-<!ENTITY pluginver     "2020.10.04b">
-=======
 <!ENTITY pluginver     "2020.12.20">
->>>>>>> Stashed changes
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -44,9 +40,6 @@
 <CHANGES>
 ## SNMP
 
-<<<<<<< Updated upstream
-###2020.10.04
-=======
 ### 2020.12.20
 - Add Dirty Memory reporting.
 
@@ -56,7 +49,6 @@
 - Code and functionally identical to version 2020.10.04
 
 ### 2020.10.04
->>>>>>> Stashed changes
 - Added `mem_info.sh` to print memory values in bytes
  - Exposed in SNMP as `meminfo`
  - Current memory values exported are MemTotal, MemFree, MemAvailable, Cached, Active, Inactive, Committed_AS

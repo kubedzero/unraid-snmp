@@ -11,7 +11,7 @@ The main objectives of this repository are:
 
 ## Installation sequence
 
-* An Unraid user gets the link to the raw `snmp.plg` file hosted on Github, such as https://raw.githubusercontent.com/kubedzero/unraid-snmp/master/snmp.plg
+* An Unraid user gets the link to the raw `snmp.plg` file hosted on Github, such as https://raw.githubusercontent.com/kubedzero/unraid-snmp/main/snmp.plg
 * They paste the URL into the text input of the "Install Plugin" tab of the Plugins Unraid UI and push "Install"
 * Unraid makes a local copy of the `snmp.plg` file in `/boot/config/plugins/snmp.plg` which exists persistently on the Unraid USB drive
 * Unraid automatically downloads the `.txz` packages declared in the `snmp.plg` file. In this case, it is Perl, libnl, net-snmp, and our custom-built file, unraid-snmp. They are downloaded into `/boot/config/plugins/snmp/` so they needn't be re-downloaded on reboots
