@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "main">
 
-<!ENTITY pluginver     "2020.11.20">
+<!ENTITY pluginver     "2020.12.20">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "849240df53b7853f02b3f12886472cc3">
+<!ENTITY pluginpkgmd5  "946e75bfef443c03b04cef44f63ed3d6">
 ]>
 
 <PLUGIN  name="&name;"
@@ -38,14 +38,17 @@
          >
 
 <CHANGES>
-##SNMP
+## SNMP
 
-###2020.11.20
+### 2020.12.20
+- Add Dirty Memory reporting.
+
+### 2020.11.20
 - Repository branch references changed from "master" to "main"
  - https://github.com/github/renaming
 - Code and functionally identical to version 2020.10.04
 
-###2020.10.04
+### 2020.10.04
 - Added `mem_info.sh` to print memory values in bytes
  - Exposed in SNMP as `meminfo`
  - Current memory values exported are MemTotal, MemFree, MemAvailable, Cached, Active, Inactive, Committed_AS
@@ -55,14 +58,14 @@
  - State is stored between reboots in `/boot/config/plugins/snmp/snmp.cfg`
  - The script `/usr/local/emhttp/plugins/snmp/disk_temps.sh` reads this config to change behavior
 
-###2020.09.20
+### 2020.09.20
 - Bugfix: SMB and NFS permission denied errors after plugin install
  - Unused scripts were present in `unraid-snmp-2020.09.19-x86_64-1.txz` and somehow interrupted server access
  - Resolved by rebuilding the `.txz` to contain only used files
 - Updated `slack-desc` formatting
 - PLG tweak: moved forward slash into XML variable for `usbcfgdir`
 
-###2020.09.19
+### 2020.09.19
 - Migrate SNMP plugin to .txz style install 
 - Optimized plugin removal for more complete cleanup
 - Updated net-snmp from 5.8-5 to 5.9
@@ -84,7 +87,7 @@
  - Exposed in SNMP as `cpumhz`
  - Tested with an Intel CPU virtualized under ESXi
 
-###2020.04.01
+### 2020.04.01
 - Cache downloaded files on USB to support offline installation
 - Add /mnt/disk up to 28 from 20 to provide 30 drive support
 - Add MD5 for shell scripts
@@ -92,43 +95,43 @@
 - More consistent variable use and naming in .plg file
 - Clearer install and uninstall logging
 
-###2019.05.28c
+### 2019.05.28c
 - Fix icon file
 
-###2019.05.28b
+### 2019.05.28b
 - Customized for the kubedzero repository
 
-###2019.05.28
+### 2019.05.28
 - Updated plugin to work with 6.7.0, enforce minimum version
 
-###2018.07.22
+### 2018.07.22
 - Fix bug with grep and "mostfree" allocator. https://github.com/coppit/unraid-snmp/pull/1
 
-###2017.02.07
+### 2017.02.07
 - Drop all pretense of trying to keep up with nerd tools. Just require perl, and suggest that the user install nerd tools.
 
-###2016.02.28
+### 2016.02.28
 - Bump the version of perl to match nerd tools.
 
-###2015.10.18
+### 2015.10.18
 - Run temperature updates in the background
 
-###2015.09.06
+### 2015.09.06
 - Move packages to github for better reliability
 
-###2015.09.05
+### 2015.09.05
 - Add support for reporting share free space
 
-###2015.08.25
+### 2015.08.25
 - Download and install the drive temp script (duh)
 
-###2015.08.24
+### 2015.08.24
 - Added hard drive temperature capture
 
-###2015.08.23
+### 2015.08.23
 - Reduced logging to "warning" level
 
-###2015.06.24
+### 2015.06.24
 - Initial unRAID V6 release.
 </CHANGES>
 
