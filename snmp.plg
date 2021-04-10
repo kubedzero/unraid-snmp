@@ -273,7 +273,8 @@ do
   [ -z "$line" ] &amp;&amp; continue
 
   echo "Deleting $line"
-  rm -rf "$line"
+  # rm -rf "/path/to/prefix*" will not work due to quotes, wrap in bash exec
+  bash -c "rm -rf $line"
 done &lt; &lt;(printf '%s\n' "$dirs_files_to_remove")
 
 printf "\nDirectory and file removal done"
