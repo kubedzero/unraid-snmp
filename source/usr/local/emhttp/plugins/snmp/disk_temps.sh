@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Scan installed disks for their standby state and temperature
 # Use a 5 minute TTL cache file for increased performance when calling rapidly

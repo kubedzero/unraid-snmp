@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # This uses /proc/meminfo to grab various memory values for SNMP
 

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # This uses lscpu to find the speed of the processor in Megahertz
 
