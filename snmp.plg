@@ -5,8 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-
-<!ENTITY pluginver     "2020.12.20">
+<!ENTITY pluginver     "2021.04.25">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -27,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "946e75bfef443c03b04cef44f63ed3d6">
+<!ENTITY pluginpkgmd5  "">
 ]>
 
 <PLUGIN  name="&name;"
@@ -40,6 +39,11 @@
 
 <CHANGES>
 ## SNMP
+
+### 2020.04.25
+- Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
+ - Also tweaked the install script to avoid an early exit if the bundled snmpd.conf was missing
+- Adjusted PLG uninstall process to properly remove `/etc/rc.d/rc.snmpd*`
 
 ### 2020.12.20
 - Add Dirty Memory reporting.
