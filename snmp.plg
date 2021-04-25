@@ -3,7 +3,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name          "snmp">
 <!ENTITY author        "kubedzero">
-<!ENTITY gitbranch     "main">
+<!ENTITY gitbranch     "test">
+
 
 <!ENTITY pluginver     "2020.12.20">
 <!ENTITY minosver      "6.7.0">
@@ -273,7 +274,7 @@ do
   [ -z "$line" ] &amp;&amp; continue
 
   echo "Deleting $line"
-  # rm -rf "/path/to/prefix*" will not work due to quotes, wrap in bash exec
+  # rm -rf "/path/to/prefix*" * expansion fails due to quotes, wrap in bash exec
   bash -c "rm -rf $line"
 done &lt; &lt;(printf '%s\n' "$dirs_files_to_remove")
 
