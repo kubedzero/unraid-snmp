@@ -16,12 +16,26 @@ Tag="cogs"
 // Dynamix provided function to parse /boot/config/plugins/snmp/snmp.cfg
 // Sample line from .cfg: SETTINGNAME="value";
 $cfg = parse_plugin_cfg('snmp');
+
+// Load the "default" into a variable
+$snmpd_conf_default = file_get_contents('/usr/local/emhttp/plugins/snmp/snmpd.conf');
+
+// Load current file into memory (from the plugin dir so not what might be currently active if a user made a change)
+// I cannot load /etc/snmp/snmpd.conf because this will be 'empty' whenever the system reboots
+if(!isset($cfg['SNMPDCONF']) || empty($cfg['SNMPDCONF'])) {
+  $cfg['SNMPDCONF'] = file_get_contents('/usr/local/emhttp/plugins/snmp/snmpd.conf');
+}
 ?>
 
 <!-- Creates the settings form, which can POST updates to the server -->
 <!-- Configures reads/writes to the file /boot/config/plugins/snmp/snmp.cfg -->
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" name="#file" value="snmp/snmp.cfg">
+<input type="hidden" name="#include" value="/plugins/snmp/scripts/run_before_save.php">
+<input type="hidden" name="#command" value="../../../usr/bin/bash"> <!-- Unraid adds /usr/local/emhttp/ to the command for some reason -->
+<!-- auto restart snmp after saving -->
+<input type="hidden" name="#arg[0]" value="/etc/rc.d/rc.snmpd">
+<input type="hidden" name="#arg[1]" value="restart">
 
 <!-- Adds a new category to the Form -->
 <!-- The colon space moves it in the same line to the right -->
@@ -38,6 +52,12 @@ Enable Unsafe Temperature Checking:
 <!-- Popup help section that can be accessed by clicking on the category name -->
 > By default, this is disabled and SNMP only checks the disk temperature if the disk reports itself to be out of STANDBY mode. Some systems' disks always report STANDBY mode, preventing SNMP from ever fetching disk temperature. Enable this setting to use a less safe method of temperature fetching that may wake the disks from STANDBY in some systems.
 
+
+snmpd.conf:
+: <? echo "<textarea id='SNMPDCONF' name='SNMPDCONF' style='width: 800px; height: 300px;'>".$cfg['SNMPDCONF']."</textarea>" ?>
+
+> The contents of this textfield will be copied to the snmpd config file (/etc/snmp/snmpd.conf), after saving snmpd will be automatically restarted
+
 <!-- Create a button titled "Default" in the UI -->
 <!-- It calls setDefaults javascript function when clicked and then submits the form after-->
 <input type="submit" value="Default" onClick="setDefaults(this.form)">
@@ -53,6 +73,9 @@ Enable Unsafe Temperature Checking:
 <!-- It finds form values by their ID -->
 <script type="text/javascript">
 function setDefaults(form) {
-	form.unsafeTemp.value = "0";
+    form.unsafeTemp.value = "0";
+    form.SNMPDCONF.value = `
+<? echo $snmpd_conf_default ?>
+`;
 }
 </script>
