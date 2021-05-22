@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # This uses df to find the free space of physical disks
 

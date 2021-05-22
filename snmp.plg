@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "testupgrade">
 
-<!ENTITY pluginver     "2020.12.20">
+<!ENTITY pluginver     "2021.05.21">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "946e75bfef443c03b04cef44f63ed3d6">
+<!ENTITY pluginpkgmd5  "6afea4c03bb4f0a9db8d49e2450bd40d">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,11 @@
 
 <CHANGES>
 ## SNMP
+
+### 2021.05.21
+- Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
+- Tweaked the install script to avoid an early exit if the bundled snmpd.conf was missing
+- Adjusted PLG uninstall process to properly remove `/etc/rc.d/rc.snmpd*`
 
 ### 2020.12.20
 - Add Dirty Memory reporting.
@@ -273,7 +278,7 @@ do
   [ -z "$line" ] &amp;&amp; continue
 
   echo "Deleting $line"
-  # rm -rf "/path/to/prefix*" will not work due to quotes, wrap in bash exec
+  # rm -rf "/path/to/prefix*" * expansion fails due to quotes, wrap in bash exec
   bash -c "rm -rf $line"
 done &lt; &lt;(printf '%s\n' "$dirs_files_to_remove")
 
