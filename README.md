@@ -81,4 +81,9 @@ The key to creating these Slackware packages is to use `makepkg` which is provid
   * https://github.com/dmacias72/unRAID-NerdPack/blob/master/README.md
   * A modified version of `pkg_build.sh` https://github.com/dmacias72/unRAID-NerdPack/blob/master/source/mkpkg
 * Structuring of the source directories, specifically the install script, were found at https://slackwiki.com/Doinst.sh
+* Other plugins' styles of uninstalling. The first two remove all traces of the plugin from the /boot persistent USB storage, while the latter two only remove some traces. This could allow configs to stay behind, so a reinstall of the plugin would reuse the leftover config from the previous install. I'm tending to stick with the former approach, as I worry leaving behind remnants could lead to unexpected behavior
+  * https://github.com/jbrodriguez/unbalance/blob/master/plugin/template.plg#L88
+  * https://github.com/dlandon/open.files/blob/master/open.files.plg#L163
+  * https://github.com/dmacias72/unRAID-NerdPack/blob/master/plugin/NerdPack.plg#L292 
+  - https://github.com/StevenDTX/unRAID-open-vm-tools/blob/master/openVMTools_compiled.plg#L275
 

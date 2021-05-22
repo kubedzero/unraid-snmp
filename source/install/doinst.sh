@@ -6,7 +6,7 @@
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -euo pipefail
 
-directory="/usr/local/emhttp/plugins/snmp/"
+directory="/usr/local/emhttp/plugins/snmp"
 echo "Set permissions and move into dir $directory"
 chmod a+r "$directory"
 cd "$directory"
@@ -32,10 +32,25 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     echo "Stop SNMP daemon if it is currently running"
     bash /etc/rc.d/rc.snmpd stop 2>&1
 
-    echo "Replace default snmpd.conf with our own, backing up the original"
-    # NOTE: Use cp, not mv. Plugin 2020.04.01 and earlier use the .conf
-    # under /usr/local and updating will fail if SNMP can't start.
-    cp --backup /usr/local/emhttp/plugins/snmp/snmpd.conf /etc/snmp/snmpd.conf
+    
+    # Check if a UI/user-defined snmpd.conf exists on the USB disk, 
+    # copying that over the default snmpd.conf. Otherwise use the 
+    # bundled, Unraid-customized snmpd.conf unzipped as part of the .txz.
+    # NOTE: Plugin 2020.04.01 and earlier use the .conf under 
+    # /usr/local/emhttp/plugins/, so leave it by using cp instead of mv.
+    custom_snmpd="/boot/config/plugins/snmp/snmpd.conf"
+    original_snmpd="/etc/snmp/snmpd.conf"
+    plugin_default_snmpd="$directory/snmpd.conf"
+    if [[ -f $custom_snmpd ]]; then
+        echo "Using the user-defined config $custom_snmpd, backing up the original"
+        cp --backup "$custom_snmpd" "$original_snmpd"
+    elif [[ -f $plugin_default_snmpd ]]; then
+        echo "Using the Unraid default config $plugin_default_snmpd, backing up the original"
+        cp --backup "$plugin_default_snmpd" "$original_snmpd"
+    else
+        echo "Could not find user-defined or Unraid-customized snmpd.conf! Using default $original_snmpd"
+    fi
+
 
     # Define the additional flags we want to add into the SNMP daemon startup
     # Spaces at end of string to separate from other flags

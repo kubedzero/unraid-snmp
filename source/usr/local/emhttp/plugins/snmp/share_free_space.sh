@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # This uses the Unraid-provided shares.ini to print out free KB per share
 
