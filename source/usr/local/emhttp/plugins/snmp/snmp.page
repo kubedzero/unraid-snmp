@@ -38,7 +38,15 @@ $snmpd_conf = preg_replace(["/\r\n/","/\r/"],"\n",$snmpd_conf);
 <!-- Configures reads/writes to the file /boot/config/plugins/snmp/snmp.cfg -->
 <!-- update.php is found at /usr/local/emhttp/update.php -->
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
+<!-- Stolen from update.php. Parameters with empty strings are omitted from being written to the file -->
+<input type="hidden" name="#cleanup" value="true">
 <input type="hidden" name="#file" value="snmp/snmp.cfg">
+<!-- PHP to execute after exiting this file but before handing off to update.php -->
+<input type="hidden" name="#include" value="/plugins/snmp/run_before_save.php">
+<!-- auto restart snmp after saving -->
+<input type="hidden" name="#command" value="../../../usr/bin/bash"> <!-- Unraid appends this to /usr/local/emhttp/ -->
+<input type="hidden" name="#arg[0]" value="/etc/rc.d/rc.snmpd">
+<input type="hidden" name="#arg[1]" value="restart">
 
 <!-- Adds a new category to the Form -->
 <!-- The colon space moves it in the same line to the right -->
@@ -57,12 +65,11 @@ Enable Unsafe Temperature Checking:
 
 <!-- Stolen from SMBExtras.page, format the text entry field and safely print smnpd.conf -->
 <!-- https://stackoverflow.com/questions/3318132 -->
-snmpd.conf:
-: <textarea spellcheck="false" cols="30" rows="<?=substr_count($snmpd_conf,"\n")+1?>" maxlength="2048" name="snmpd_conf_box" style="resize:none;font-family:bitstream;width:65.5%"> 
-  <?php echo htmlspecialchars($snmpd_conf); ?>  
-  </textarea>
+Custom snmpd.conf contents:
+: <textarea spellcheck="false" rows="<?=substr_count($snmpd_conf,"\n")+1?>" maxlength="2048" name="SNMPDCONF" style="resize:none;font-family:bitstream;width:40%"><?php echo htmlspecialchars($snmpd_conf); ?></textarea>
 
-> The contents of this textfield will be copied to the snmpd config file (/etc/snmp/snmpd.conf), after saving snmpd will be automatically restarted
+<!-- Popup help section that can be accessed by clicking on the category name -->
+> This text will be copied to /etc/snmp/snmpd.conf and also backed up to USB. SNMP will also be restarted after clicking Apply or Default
 
 <!-- Create a button titled "Default" in the UI -->
 <!-- It calls setDefaults javascript function when clicked and then submits the form after-->
@@ -80,11 +87,9 @@ snmpd.conf:
 <script type="text/javascript">
 function setDefaults(form) {
     form.unsafeTemp.value = "0";
+    form.SNMPDCONF.value = `
+<? $snmpd_conf_default = file_get_contents('/usr/local/emhttp/plugins/snmp/snmpd.conf'); 
+echo $snmpd_conf_default; ?>
+`;
 }
 </script>
-
-<!-- <script>
-function setDefaults2(form) {
-    $(form).find('input.unsafeTemp').val("0")
-}
-</script> -->
