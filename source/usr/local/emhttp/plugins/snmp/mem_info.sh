@@ -36,5 +36,6 @@ getValFromMemInfo "^Cached:" "Cached"
 getValFromMemInfo "Active:" "Active"
 getValFromMemInfo "Inactive:" "Inactive"
 getValFromMemInfo "Committed_AS:" "Committed_AS"
+getValFromMemInfo "Dirty:" "Dirty"
 
 exit 0
