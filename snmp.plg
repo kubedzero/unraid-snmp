@@ -41,13 +41,12 @@
 ## SNMP
 
 ### 2023.02.12
-- Updated minimum OS version from 6.7.0 to 6.11.0
- - NOTE: net-snmp and perl now require `libc-2.34` or newer, which is only satisfied starting with Unraid 6.11.0's use of `libc-2.36`. Unraid 6.10.3 uses `libc-2.33` which will yield errors such as `/lib64/libc.so.6: version `GLIBC_2.34' not found (required by /usr/lib64/perl5/CORE/libperl.so)`
 - Adjusted README wording
 - Updated package versions
  - `libnl-1.1.4-3` to `libnl-1.1.4-5`
  - `net-snmp-5.9-1` to `net-snmp-5.9.3-1`
  - `perl-5.32.0-1` to `perl-5.36.0-3`
+- Updated minimum OS version from 6.7.0 to 6.11.0. Packages `net-snmp` and `perl` now require `libc-2.34` or newer, which is only satisfied starting with Unraid 6.11.0's use of `libc-2.36`. Unraid 6.10.3 uses `libc-2.33` which will yield errors such as `/lib64/libc.so.6: version 'GLIBC_2.34' not found (required by /usr/lib64/perl5/CORE/libperl.so)`
 
 ### 2021.05.21
 - Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
