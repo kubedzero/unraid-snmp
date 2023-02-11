@@ -42,8 +42,10 @@
 
 ### 2021.05.21
 - Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
+- Users can define a custom SNMP config at `/boot/config/plugins/snmp/snmpd.conf` that will automatically be picked up at boot/install time
 - Tweaked the install script to avoid an early exit if the bundled snmpd.conf was missing
 - Adjusted PLG uninstall process to properly remove `/etc/rc.d/rc.snmpd*`
+- SNMP HDD/CPU/RAM/etc scripts now use `/bin/bash` as `/usr/bin/bash` just symlinks to it anyway
 
 ### 2020.12.20
 - Add Dirty Memory reporting.
