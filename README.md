@@ -39,34 +39,37 @@ Since most of the logic exists in the compiled `unraid-snmp.txz` file, the `snmp
 
 Changing any of the numerous files under the `./source/` directory will require a rebuild of the `unraid-snmp.txz` file. The `./source/` directory is only for tracking code changes and does not affect the code deployed to Unraid.
 
-The `createpackage.sh` script can assist with creating the package, but is provided mostly for convenience. The following instructions will take use of it, but the commands within can be run manually just as easily. 
+The `createpackage.sh` script can assist with creating the package, but is provided mostly for convenience. The following instructions will make use of it, but the commands within can be run manually just as easily. 
 
 The key to creating these Slackware packages is to use `makepkg` which is provided on Slackware. For this reason, I build the packages on my Unraid server.
 
 
 
-* Get the source code from macOS onto Unraid with `scp -r ~/GitHub/kubedzero/unraid-snmp/source root@unraid:/tmp/packageSource`
+* Get the `source` directory from macOS over to Unraid using `rsync -vpr "~/GitHub/kubedzero/unraid-snmp/source/*" root@unraid:/tmp/packageSource/` 
   * recursively copy all source files to the Unraid server with IP `unraid` 
   * replace `unraid` with `192.168.1.10` or whatever your server's IP is
-  * `scp` will automatically create the `packageSource` directory and drop the sub-contents into it. So if there was a file on macOS `~/GitHub/kubedzero/unraid-snmp/source/install/doinst.sh` it would be copied to `/tmp/packageSource/install/doinst.sh`. 
-  * NOTE: If `/tmp/packageSource` already existed before running the command, the `./source` directory is created within. So if there was a file on macOS `~/GitHub/kubedzero/unraid-snmp/source/install/doinst.sh` it would be copied to `/tmp/packageSource/source/install/doinst.sh`. 
+  * NOTE: v for verbose, p for permissions, r for recursive. No need for group, owner, time, etc that would be encapsulated in `-a`. If `-a` is used, you might see `rsync: [generator] chown "/boot/packageSource/source" failed: Operation not permitted (1)` due to users/owners/groups not existing on the target system
+  * NOTE that permissions (chmod and executable) don't get copied over with SCP, so this must be manually checked for accuracy `scp -r ~/GitHub/kubedzero/unraid-snmp/source root@unraid:/tmp/packageSource/` 
+  * Confirm that it exists correctly in Unraid as `/tmp/packageSource/many-files-here` and NOT `/tmp/packageSource/source/many-files-here`. Depending on if files already existed there, different behavior could result. This will affect the TXZ packaging. Another way this could happen is if you copy just the directory (`rsync directory`) versus the directory's contents (`rsync directory/*`)
+  
 * Copy the `createpackage.sh` script as well: `scp ~/GitHub/kubedzero/unraid-snmp/createpackage.sh root@unraid:/tmp/`
-* Run a remote SSH command on macOS to build the package: `ssh -t root@unraid "cd /tmp/ && bash /tmp/createpackage.sh 2020.09.19 /tmp/packageSource/"`
+* Run a remote SSH command on macOS to build the package: `ssh -t root@unraid "cd /tmp/ && bash /tmp/createpackage.sh 2023.02.12 /tmp/packageSource/"`
   * The `-t` command executes everything in the double quotes on the Unraid server
   * The command first establishes a location by moving into the `/tmp/` directory
   * It then calls `bash /tmp/createpackage.sh` because Unraid changed to not allow direct execution, aka just executing `/tmp/createpackage.sh`
-  * `createpackage.sh` is given the argument `2020.09.19` for the package naming. It does not affect the way the package is created aside from the filename. 
+  * `createpackage.sh` is given the argument `2023.02.12` for the package naming. It does not affect the way the package is created aside from the filename. 
   * It is also given the directory where the files and folders belonging in the package live, which we copied over earlier: `/tmp/packageSource/`
-  * It creates the completed package `unraid-snmp-2020.09.19-x86_64-1.txz` in the directory we called the command from, `/tmp/`
+  * It creates the completed package `unraid-snmp-2023.02.12-x86_64-1.txz` in the directory we called the command from, `/tmp/`
+  * It will also output the MD5 of the created package
 * Diving into what `createpackage.sh` is actually doing
   * It confirms `makepkg` is installed, preventing accidental usage on macOS
-  * It takes the input plugin version and constructs the package filename in typical Slackware format: `packagename-version-x86_64-1.txz` or `unraid-snmp-2020.09.19-x86_64-1.txz`
+  * It takes the input plugin version and constructs the package filename in typical Slackware format: `packagename-version-x86_64-1.txz` or `unraid-snmp-2023.02.12-x86_64-1.txz`
   * It cleans out `.DS_Store` files from the source directory (provided as the second argument), to make sure macOS artifacts don't get included during package creation
   * The `makepkg` command bundles everything in the directory from where it was called into the package, so in preparation, the script moves to the source directory (provided as the second argument)
   * The `makepkg` command is invoked and the package is created (outside the source directory, as required by the tool)
   * The MD5 of the created package is computed and printed for convenience
 * Now we need to copy the compiled package back to macOS, where our Git repository lives. `scp "root@unraid:/tmp/*.txz" ~/GitHub/kubedzero/unraid-snmp/packages`
-  * This copies any `.txz` file in `/tmp/` so it doesn't have to be updated for version bumps, but `*.txz` can just as easily be replaced with the full name `unraid-snmp-2020.09.19-x86_64-1.txz` if desired
+  * This copies any `.txz` file in `/tmp/` so it doesn't have to be updated for version bumps, but `*.txz` can just as easily be replaced with the full name `unraid-snmp-2023.02.12-x86_64-1.txz` if desired
 * Now we need to update the MD5 listed in the `snmp.plg` file for the `unraid-snmp.txz` package we copied over. I do this manually, using the printout from the `createpackage.sh` script. A sample MD5 is `09655c2ee9391e64ff7584b2893b5454`
 * Now update the plugin version in the `snmp.plg` file if it hasn't already been done, commit the code and package changes, and push to GitHub
 * Done!

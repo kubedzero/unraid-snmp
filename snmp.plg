@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "testupgrade">
 
-<!ENTITY pluginver     "2021.05.21">
+<!ENTITY pluginver     "2023.02.12">
 <!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -16,17 +16,17 @@
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
 <!ENTITY usbcfgdir     "/boot/config/plugins/&name;/">
 
-<!ENTITY snmppkg       "net-snmp-5.9-x86_64-1.txz">
-<!ENTITY snmppkgmd5    "b4f6f3dfef81d1f58171012800b8ffc6">
+<!ENTITY snmppkg       "net-snmp-5.9.3-x86_64-1.txz">
+<!ENTITY snmppkgmd5    "c2c0fdd59ad729ba15037a15c0aaca02">
 
-<!ENTITY libnlpkg      "libnl-1.1.4-x86_64-3.txz">
-<!ENTITY libnlpkgmd5   "82c9374aaa9c7f4efbde8041f87d6053">
+<!ENTITY libnlpkg      "libnl-1.1.4-x86_64-5.txz">
+<!ENTITY libnlpkgmd5   "ec5bae2158ff4e5f71c442f91fedfca9">
 
-<!ENTITY perlpkg       "perl-5.32.0-x86_64-1.txz">
-<!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
+<!ENTITY perlpkg       "perl-5.36.0-x86_64-3.txz">
+<!ENTITY perlpkgmd5    "311457f731863e98552ea7bebd620d13">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "6afea4c03bb4f0a9db8d49e2450bd40d">
+<!ENTITY pluginpkgmd5  "231978db1598d8b9a966bc02ad8dd79f">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,13 @@
 
 <CHANGES>
 ## SNMP
+
+### 2023.02.12
+- Adjusted README wording
+- Updated package versions
+ - `libnl-1.1.4-3` to `libnl-1.1.4-5`
+ - `net-snmp-5.9-1` to `net-snmp-5.9.3-1`
+ - `perl-5.32.0-1` to `perl-5.36.0-3`
 
 ### 2021.05.21
 - Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
