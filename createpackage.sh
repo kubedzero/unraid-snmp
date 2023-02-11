@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# NOTE: This should be executed on Unraid or Slackware OS
+
 # Given a version name and source code directory, create the snmp-unraid package
 # Example: bash /boot/createpackage.sh 1337-01-01b /boot/pluginSource/
 
