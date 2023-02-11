@@ -6,7 +6,7 @@
 <!ENTITY gitbranch     "test">
 
 <!ENTITY pluginver     "2023.02.12">
-<!ENTITY minosver      "6.7.0">
+<!ENTITY minosver      "6.11.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
 <!ENTITY pluginurl     "&githuburl;/snmp.plg">
@@ -41,6 +41,8 @@
 ## SNMP
 
 ### 2023.02.12
+- Updated minimum OS version from 6.7.0 to 6.11.0
+ - NOTE: net-snmp and perl now require `libc-2.34` or newer, which is only satisfied starting with Unraid 6.11.0's use of `libc-2.36`. Unraid 6.10.3 uses `libc-2.33` which will yield errors such as `/lib64/libc.so.6: version `GLIBC_2.34' not found (required by /usr/lib64/perl5/CORE/libperl.so)`
 - Adjusted README wording
 - Updated package versions
  - `libnl-1.1.4-3` to `libnl-1.1.4-5`
