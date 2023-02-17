@@ -1,24 +1,25 @@
 #!/bin/bash
 
-# This uses lscpu to find the speed of the processor in Megahertz
+# This uses /proc/cpuinfo to find the speed of the processor in Megahertz
 
 
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -euo pipefail
 
-# Run lscpu, find just the line with the Mhz, and grab the number
-# Example lscpu output: CPU MHz:                         2400.000
-lscpu_output=$(lscpu | grep "CPU MHz" | awk '{print $3}')
+# Print out /proc/cpuinfo, find the first line with the 
+#  MHz (it repeats for each installed processor), and grab the number to store as a variable
+# Relevant cpuinfo output: cpu MHz     : 4199.992
+cpuinfo_mhz=$(cat /proc/cpuinfo | grep "cpu MHz" --max-count 1 | awk '{print $4}')
 
-# Exit if Mhz is empty or non-numeric, otherwise print and exit
+# Exit if MHz is empty or non-numeric, otherwise print and exit
 # https://www.geekpills.com/operating-system/linux/bash-check-integer-or-float
-if [[ -z "$lscpu_output" ]]
+if [[ -z "$cpuinfo_mhz" ]]
 then
     echo "Exiting: Encountered an empty MHz value"
 else
-    if [[ $lscpu_output =~ ^[+-]?[0-9]*$ || $lscpu_output =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]
+    if [[ $cpuinfo_mhz =~ ^[+-]?[0-9]*$ || $cpuinfo_mhz =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]
     then
-        echo "$lscpu_output MHz"
+        echo "$cpuinfo_mhz MHz"
         exit 0
     else
         echo "Exiting: Encountered a non-numeric CPU MHz"

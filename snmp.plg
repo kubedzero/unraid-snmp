@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "main">
 
-<!ENTITY pluginver     "2023.02.12">
+<!ENTITY pluginver     "2023.02.18">
 <!ENTITY minosver      "6.11.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "311457f731863e98552ea7bebd620d13">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "231978db1598d8b9a966bc02ad8dd79f">
+<!ENTITY pluginpkgmd5  "9bab622c5c286b7ab00f02369140034b">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,9 @@
 
 <CHANGES>
 ## SNMP
+
+### 2023.02.17
+- Adjusted CPU MHz script to source from `/proc/cpuinfo` instead of `lscpu` to improve compatibility. Thanks @mattie112 @MVLP @irishjd for the help!
 
 ### 2023.02.12
 - Adjusted README wording
