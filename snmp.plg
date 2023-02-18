@@ -40,7 +40,7 @@
 <CHANGES>
 ## SNMP
 
-### 2023.02.17
+### 2023.02.18
 - Adjusted CPU MHz script to source from `/proc/cpuinfo` instead of `lscpu` to improve compatibility. Thanks @mattie112 @MVLP @irishjd for the help!
 
 ### 2023.02.12
