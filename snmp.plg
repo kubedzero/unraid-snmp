@@ -200,6 +200,8 @@ echo ""
 
 # Get the Read-Only Community string from the config file
 community=$(grep "rocommunity" --max-count 1 "/etc/snmp/snmpd.conf" | awk '{print $2}')
+# Clean newlines, carriage returns, spaces, and tabs
+community=${community//[$'\t\r\n ']}
 
 # If the Community cannot be read, default to "public"
 if [[ -z "$community" ]]
