@@ -206,6 +206,7 @@ if [[ -z "$community" ]]
 then
     echo "Read-Only Community String not found in /etc/snmp/snmpd.conf. Defaulting to test with public."
     community="public"
+fi
 
 # Print out the command used to test SNMP functionality, and then run/evaluate the command
 printf "snmpwalk -v 2c localhost -c $community hrFSMountPoint\n"
