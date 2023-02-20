@@ -230,12 +230,12 @@ echo "+=========================================================================
 echo ""
 
 printf "Here are how sharefree lines look:\n"
-printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
-snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
+printf "snmpwalk -v 2c -c $community localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
+snmpwalk -v 2c -c $community localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
 printf "\nHere are how all custom extensions look:\n"
-printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
-snmpwalk -v 2c -c public localhost nsExtendOutLine
+printf "snmpwalk -v 2c -c $community localhost nsExtendOutLine\n"
+snmpwalk -v 2c -c $community localhost nsExtendOutLine
 
 
 echo ""
