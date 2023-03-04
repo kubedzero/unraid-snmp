@@ -5,8 +5,8 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "main">
 
-<!ENTITY pluginver     "2023.02.19">
-<!ENTITY minosver      "6.11.0">
+<!ENTITY pluginver     "2021.05.21">
+<!ENTITY minosver      "6.7.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
 <!ENTITY pluginurl     "&githuburl;/snmp.plg">
@@ -16,17 +16,17 @@
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
 <!ENTITY usbcfgdir     "/boot/config/plugins/&name;/">
 
-<!ENTITY snmppkg       "net-snmp-5.9.3-x86_64-1.txz">
-<!ENTITY snmppkgmd5    "c2c0fdd59ad729ba15037a15c0aaca02">
+<!ENTITY snmppkg       "net-snmp-5.9-x86_64-1.txz">
+<!ENTITY snmppkgmd5    "b4f6f3dfef81d1f58171012800b8ffc6">
 
-<!ENTITY libnlpkg      "libnl-1.1.4-x86_64-5.txz">
-<!ENTITY libnlpkgmd5   "ec5bae2158ff4e5f71c442f91fedfca9">
+<!ENTITY libnlpkg      "libnl-1.1.4-x86_64-3.txz">
+<!ENTITY libnlpkgmd5   "82c9374aaa9c7f4efbde8041f87d6053">
 
-<!ENTITY perlpkg       "perl-5.36.0-x86_64-3.txz">
-<!ENTITY perlpkgmd5    "311457f731863e98552ea7bebd620d13">
+<!ENTITY perlpkg       "perl-5.32.0-x86_64-1.txz">
+<!ENTITY perlpkgmd5    "6993da990e2decbae18e92c5bf615dbe">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "beea9b6971199717133bf4a2e0a6223a">
+<!ENTITY pluginpkgmd5  "6afea4c03bb4f0a9db8d49e2450bd40d">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,21 +39,6 @@
 
 <CHANGES>
 ## SNMP
-
-### 2023.02.19
-- Adjusted CPU MHz script to more succinctly retrieve data
-- Adjusted plugin PLG install script to read the `rocommunity` string from the `/etc/snmp/snmpd.conf` SNMP daemon config file when testing install success/failure. Thanks @cjhammel for the suggestion!
-
-### 2023.02.18
-- Adjusted CPU MHz script to source from `/proc/cpuinfo` instead of `lscpu` to improve compatibility. Thanks @mattie112 @MVLP @irishjd for the help!
-
-### 2023.02.12
-- Adjusted README wording
-- Updated package versions
- - `libnl-1.1.4-3` to `libnl-1.1.4-5`
- - `net-snmp-5.9-1` to `net-snmp-5.9.3-1`
- - `perl-5.32.0-1` to `perl-5.36.0-3`
-- Updated minimum OS version from 6.7.0 to 6.11.0. Packages `net-snmp` and `perl` now require `libc-2.34` or newer, which is only satisfied starting with Unraid 6.11.0's use of `libc-2.36`. Unraid 6.10.3 uses `libc-2.33` which will yield errors such as `/lib64/libc.so.6: version 'GLIBC_2.34' not found (required by /usr/lib64/perl5/CORE/libperl.so)`
 
 ### 2021.05.21
 - Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
@@ -189,7 +174,7 @@
 # NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
 
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# Exit script early if we encounter an error
+# exit script early if we encounter an error
 set -e
 
 echo ""
@@ -198,21 +183,8 @@ echo "| Testing SNMP by listing mounts, /boot should be present"
 echo "+=============================================================================="
 echo ""
 
-# Get the Read-Only Community string from the config file
-community=$(grep "rocommunity" --max-count 1 "/etc/snmp/snmpd.conf" | awk '{print $2}')
-# Clean newlines, carriage returns, spaces, and tabs
-community=${community//[$'\t\r\n ']}
-
-# If the Community cannot be read, default to "public"
-if [[ -z "$community" ]]
-then
-    echo "Read-Only Community String not found in /etc/snmp/snmpd.conf. Defaulting to test with public."
-    community="public"
-fi
-
-# Print out the command used to test SNMP functionality, and then run/evaluate the command
-printf "snmpwalk -v 2c localhost -c $community hrFSMountPoint\n"
-results=$(snmpwalk -v 2c localhost -c $community hrFSMountPoint 2>&amp;1) || printf "snmpwalk failure"
+printf "snmpwalk -v 2c localhost -c public hrFSMountPoint\n"
+results=$(snmpwalk -v 2c localhost -c public hrFSMountPoint 2>&amp;1) || printf "snmpwalk failure"
 if [[ "$results" =~ "/boot" ]]
 then
   echo "SNMP appears to be working. Output:"
@@ -230,12 +202,12 @@ echo "+=========================================================================
 echo ""
 
 printf "Here are how sharefree lines look:\n"
-printf "snmpwalk -v 2c -c $community localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
-snmpwalk -v 2c -c $community localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
+printf "snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"sharefree\"'\n"
+snmpwalk -v 2c -c public localhost 'NET-SNMP-EXTEND-MIB::nsExtendOutLine."sharefree"'
 
 printf "\nHere are how all custom extensions look:\n"
-printf "snmpwalk -v 2c -c $community localhost nsExtendOutLine\n"
-snmpwalk -v 2c -c $community localhost nsExtendOutLine
+printf "snmpwalk -v 2c -c public localhost nsExtendOutLine\n"
+snmpwalk -v 2c -c public localhost nsExtendOutLine
 
 
 echo ""
@@ -255,7 +227,7 @@ exit 0
 # NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
 
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# Exit script early if we encounter an error
+# exit script early if we encounter an error
 set -e
 
 echo ""
@@ -289,13 +261,13 @@ echo "Starting TXZ package removal"
 # Read through package removal lines, uninstalling each
 while IFS= read -r line
 do
-  # If line is empty, skip to the next iteration
+  # if line is empty, skip to the next iteration
   [ -z "$line" ] &amp;&amp; continue
 
-  # Remove the directory path and extension, leaving just the package name
+  # remove the directory path and extension, leaving just the package name
   pkg_name="$(basename $line .txz)"
 
-  # Perform the package removal
+  # perform the package removal
   removepkg "$pkg_name"
 done &lt; &lt;(printf '%s\n' "$pkgs_to_remove")
 
@@ -304,7 +276,7 @@ printf "\nTXZ package removal done. Starting directory and file removal\n"
 # Read through package removal lines, uninstalling each
 while IFS= read -r line
 do
-  # If line is empty, skip to the next iteration
+  # if line is empty, skip to the next iteration
   [ -z "$line" ] &amp;&amp; continue
 
   echo "Deleting $line"
