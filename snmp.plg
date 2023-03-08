@@ -3,7 +3,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name          "snmp">
 <!ENTITY author        "kubedzero">
-<!ENTITY gitbranch     "main">
+<!-- NOTE: End Of Life branch. Will not receive updates -->
+<!ENTITY gitbranch     "eol">
 
 <!ENTITY pluginver     "2021.05.21">
 <!ENTITY minosver      "6.7.0">
@@ -39,6 +40,7 @@
 
 <CHANGES>
 ## SNMP
+## NOTE: End Of Life (EOL) Branch. Will not receive updates
 
 ### 2021.05.21
 - Added customizable snmpd.conf to the SNMP Settings page. Thanks @Mattie112 for the contribution!
