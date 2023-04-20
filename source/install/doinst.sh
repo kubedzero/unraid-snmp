@@ -52,34 +52,22 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     fi
 
 
-    # Define the additional flags we want to add into the SNMP daemon startup
-    # Spaces at end of string to separate from other flags
+    echo "Writing extra SNMPD_OPTIONS into /etc/default/snmpd to configure logging"
+    # Define the additional flags to be added into the SNMP daemon startup
     # 1=a=alert, 2=c=crit, 3=e=err, 4=w=warn, 5=n=notice, 6=i=info, 7=d=debug
-    new_flags="-LF 0-5 /var/log/snmpd.log "
+    # Write these flags into /etc/default/snmpd. As of SNMP 5.9.3, this file
+    # is sourced and merged with the default flags inside /etc/rc.d/rc.snmpd upon startup.
+    # https://tldp.org/LDP/abs/html/internal.html#SOURCEREF
+    # https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash
+    echo 'SNMPD_OPTIONS="-LF 0-5 /var/log/snmpd.log"' > /etc/default/snmpd
 
-    # Get existing OPTIONS from file, keeping only what's in double quotes
-    # https://stackoverflow.com/questions/35636323/extracting-a-string-between-two-quotes-in-bash
-    options=$(grep "OPTIONS=" /etc/rc.d/rc.snmpd | cut -d'"' -f 2)
-    # Check that new flags haven't already been added
-    if [[ $options != *"-L"* ]]; then
-        # Concatenate the new flags with the old
-        options=$new_flags$options
-        echo "Editing SNMP startup options in rc.snmpd to be [$options]"
-        # Replace the line beginning with OPTIONS= with a custom set
-        # Use a custom delimiter | to avoid collisions of sed and variable use of /
-        # Escape the start quote and end quote when we recreate the line
-        # https://stackoverflow.com/questions/9366816/sed-fails-with-unknown-option-to-s-error
-        sed --in-place=.bak --expression "s|^OPTIONS=.*|OPTIONS=\"$options\"|" /etc/rc.d/rc.snmpd
-    else
-        echo "SNMP logging flag already present in rc.snmpd, skipping modification"
-    fi
-
-    echo "Restart SNMP daemon now that we've adjusted how rc.snmpd starts it"
+    echo "Start SNMP daemon back up now that snmpd.conf and /etc/default/snmpd modifications are done"
     # Make sure error logging is going to STDOUT so it prints in install logs
     bash /etc/rc.d/rc.snmpd start 2>&1
 
     # Wait for daemon startup to complete by watching for PID file
     # Send error output of "No such file or directory" to /dev/null
+    # NOTE: ps -ef | grep snmp can be used to confirm the flags were set correctly
     count=0
     sleep 2
     while [[ -z "$(cat /var/run/snmpd 2> /dev/null)" ]]; do

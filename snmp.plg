@@ -5,7 +5,7 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "test">
 
-<!ENTITY pluginver     "2023.02.19">
+<!ENTITY pluginver     "2023.04.20">
 <!ENTITY minosver      "6.11.0">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
@@ -26,7 +26,7 @@
 <!ENTITY perlpkgmd5    "311457f731863e98552ea7bebd620d13">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
-<!ENTITY pluginpkgmd5  "beea9b6971199717133bf4a2e0a6223a">
+<!ENTITY pluginpkgmd5  "349be7c6342568dd2250e96b506f1d11">
 ]>
 
 <PLUGIN  name="&name;"
@@ -39,6 +39,13 @@
 
 <CHANGES>
 ## SNMP
+
+### 2023.04.20
+- Fixed a regression in unraid-snmp that prevented the `/etc/rc.d/rc.snmpd` file from being updated correctly. 
+ - This regression caused extra logs in `/var/log/snmpd.log`
+ - NOTE: `ps -ef | grep snmp` can be used to confirm the flags were set correctly
+ - Caused by updating from `net-snmp-5.9` to `net-snmp-5.9.3`. 
+ - Thanks @irishjd and @Uncore for the help!
 
 ### 2023.02.19
 - Adjusted CPU MHz script to more succinctly retrieve data
@@ -189,7 +196,7 @@
 # NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
 
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# Exit script early if we encounter an error
+# Exit script early if an error is encountered
 set -e
 
 echo ""
@@ -201,6 +208,7 @@ echo ""
 # Get the Read-Only Community string from the config file
 community=$(grep "rocommunity" --max-count 1 "/etc/snmp/snmpd.conf" | awk '{print $2}')
 # Clean newlines, carriage returns, spaces, and tabs
+# https://stackoverflow.com/questions/19345872/how-to-remove-a-newline-from-a-string-in-bash
 community=${community//[$'\t\r\n ']}
 
 # If the Community cannot be read, default to "public"
@@ -255,7 +263,7 @@ exit 0
 # NOTE: Modified bash for embedding in XML with ampersand-semicolon placeholders
 
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
-# Exit script early if we encounter an error
+# Exit script early if an error is encountered
 set -e
 
 echo ""
@@ -283,6 +291,7 @@ dirs_files_to_remove="
 /etc/snmp/
 /var/lib/net-snmp/
 /var/log/snmpd.log
+/etc/default/snmpd
 "
 
 echo "Starting TXZ package removal"
