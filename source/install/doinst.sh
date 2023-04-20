@@ -57,9 +57,11 @@ if [[ -f /etc/rc.d/rc.snmpd ]]; then
     # 1=a=alert, 2=c=crit, 3=e=err, 4=w=warn, 5=n=notice, 6=i=info, 7=d=debug
     # Write these flags into /etc/default/snmpd. As of SNMP 5.9.3, this file
     # is sourced and merged with the default flags inside /etc/rc.d/rc.snmpd upon startup.
+    # -A appends rather than truncates the log file
+    # -p /var/run/snmpd creates a PID file, used later on to determine if it's running
     # https://tldp.org/LDP/abs/html/internal.html#SOURCEREF
     # https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash
-    echo 'SNMPD_OPTIONS="-LF 0-5 /var/log/snmpd.log"' > /etc/default/snmpd
+    echo 'SNMPD_OPTIONS="-A -p /var/run/snmpd -LF 0-5 /var/log/snmpd.log"' > /etc/default/snmpd
 
     echo "Start SNMP daemon back up now that snmpd.conf and /etc/default/snmpd modifications are done"
     # Make sure error logging is going to STDOUT so it prints in install logs
