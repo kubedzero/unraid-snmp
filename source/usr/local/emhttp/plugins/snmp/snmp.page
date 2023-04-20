@@ -81,7 +81,7 @@ Custom snmpd.conf contents:
 </form>
 
 
-<!-- Javascript block where we can define various JS code -->
+<!-- Javascript block where various JS code can be defined -->
 <!-- Create a function called setDefaults that resets the form values -->
 <!-- It finds form values by their ID -->
 <script type="text/javascript">

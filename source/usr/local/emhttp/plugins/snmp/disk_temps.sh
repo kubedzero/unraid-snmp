@@ -28,7 +28,7 @@ mkdir -p "$working_dir"
 # Check if cache file has been modified in the last five minutes
 if [[ -n $(find $working_dir -name $cache_file_name -mmin -5) ]]
 then
-    # Output to the log file that we used cached values
+    # Output to the log file that cached values were used in place of fresh values
     echo "Valid cached values served at $(date)" >> "$cache_log_full_path"
     # Output the cached information
     cat "$cache_file_full_path"
@@ -39,7 +39,7 @@ fi
 # Define the function which will poll the disks' state in another PID
 function update_cache_file {
     # Attempt to get lock file handle/descriptor 200.
-    # -n ensures we fail immediately if we can't immediately lock
+    # -n ensures an immediate exit/failure if a lock can't be immediately acquired
     if ! flock -n 200
     then
         echo "PID $$ couldn't acquire lock on $cache_lock_full_path at $(date)"
@@ -77,7 +77,7 @@ function update_cache_file {
     if [[ "${UNSAFETEMP:-}" -eq "1" ]]
     then
         echo "Disk temp retrieval may wake disks from STANDBY"
-        # Set the command-modifying var we'll use later to an empty string
+        # Set the command-modifying var to an empty string. It will be used later
         # NOTE: WD disks need to be spun up for attributes to show
         # NOTE: Disks may be forced out of STANDBY to report attributes
         standby_check=""
@@ -86,7 +86,7 @@ function update_cache_file {
         standby_check="--nocheck standby"
     fi
 
-    # Remove the cache file before we start writing to it
+    # Remove the cache file before it gets written to
     rm -f "$cache_file_full_path"
 
     # Iterate through each model/address pair
@@ -156,7 +156,7 @@ function update_cache_file {
 }
 
 # Call the function defined above.
-# </dev/null provides empty input. I'm not sure why we need this
+# </dev/null provides empty input. I'm not sure why this is needed
 # >>$cache_log_full_path redirects all STDOUT to a file
 # 2>&1 redirects STDERR (2) into STDOUT (1)
 # 200>$filename I think executes the function under file handle 200 on the given filename
