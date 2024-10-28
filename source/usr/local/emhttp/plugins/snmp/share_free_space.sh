@@ -5,7 +5,7 @@
 # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -euo pipefail
 
-# Define the input file from which we will read Share name and free KB
+# Define the input file from which Share name and free KB will be read
 shares_ini=/var/local/emhttp/shares.ini
 
 # Check that the file exists and is non-empty and exit otherwise
