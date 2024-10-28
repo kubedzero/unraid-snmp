@@ -26,5 +26,5 @@ else
     fi
 fi
 
-# Exit with an error, as we only get here if there was an issue
+# Exit with an error, as this can only be reached in the event of an issue
 exit 1
