@@ -5,8 +5,8 @@
 <!ENTITY author        "kubedzero">
 <!ENTITY gitbranch     "testupgrade">
 
-<!ENTITY pluginver     "2023.04.20">
-<!ENTITY minosver      "6.11.0">
+<!ENTITY pluginver     "2024.11.01">
+<!ENTITY minosver      "7.0.0-beta.1">
 
 <!ENTITY githuburl     "https://raw.githubusercontent.com/&author;/unraid-snmp/&gitbranch;">
 <!ENTITY pluginurl     "&githuburl;/snmp.plg">
@@ -16,14 +16,14 @@
 <!-- Defines the persistent (USB) directory where downloaded packages are cached -->
 <!ENTITY usbcfgdir     "/boot/config/plugins/&name;/">
 
-<!ENTITY snmppkg       "net-snmp-5.9.3-x86_64-1.txz">
-<!ENTITY snmppkgmd5    "c2c0fdd59ad729ba15037a15c0aaca02">
+<!ENTITY snmppkg       "net-snmp-5.9.4-x86_64-5.txz">
+<!ENTITY snmppkgmd5    "62f00b8f5612d0dbaba8d77196f5d857">
 
 <!ENTITY libnlpkg      "libnl-1.1.4-x86_64-5.txz">
 <!ENTITY libnlpkgmd5   "ec5bae2158ff4e5f71c442f91fedfca9">
 
-<!ENTITY perlpkg       "perl-5.36.0-x86_64-3.txz">
-<!ENTITY perlpkgmd5    "311457f731863e98552ea7bebd620d13">
+<!ENTITY perlpkg       "perl-5.40.0-x86_64-2.txz">
+<!ENTITY perlpkgmd5    "4195279ed3ac9ec49215ab3977cc7eee">
 
 <!ENTITY pluginpkg     "unraid-snmp-&pluginver;-x86_64-1.txz">
 <!ENTITY pluginpkgmd5  "27df0bfd67fb265c91047ce083b17a42">
@@ -39,6 +39,12 @@
 
 <CHANGES>
 ## SNMP
+
+### 2024.11.01
+- Updated minimum OS version from 6.11.0 to 7.0.0-beta.1 to address SSL library update causing error `libssl.so.1.1: cannot open shared object file: No such file or directory` 
+- Updated package versions
+ - `net-snmp-5.9-1` to `net-snmp-5.9.4-5`
+ - `perl-5.36.0-3` to `perl-5.40.0-2`
 
 ### 2023.04.20
 - Fixed a regression in unraid-snmp that prevented the `/etc/rc.d/rc.snmpd` file from being updated correctly. 
